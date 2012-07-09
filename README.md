@@ -6,6 +6,6 @@ BOXZ is is an open source robot platform for interactive entertainment! We conne
 Author: Guangjun Zhu 
 
 
-Code license: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0) 
+License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0) 
 
 http://creativecommons.org/licenses/by-nc-sa/3.0/ 
