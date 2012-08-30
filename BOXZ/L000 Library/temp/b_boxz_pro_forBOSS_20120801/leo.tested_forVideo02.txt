@@ -1,0 +1,14 @@
+//keyboard "w,a,s,d" for action;space for stop
+//keyword "z,x" for eye control clockwise and anticlockwise
+
+ u - Left hand up
+ i - Right hand up
+ o - both hand up
+ j - Left hand down
+ k - Right hand down
+ l - both hand down
+
+piezo sensor
+  //health --
+  //health ++
+  //speed ++
