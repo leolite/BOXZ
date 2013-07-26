@@ -2,6 +2,7 @@
 BOXZ.h - Library for 2x DC motor control.
 Created by Leo.Zhu, 21 July, 2013.
 Released into the public domain.
+License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
 */
 
 #ifndef __BOXZ_H__
