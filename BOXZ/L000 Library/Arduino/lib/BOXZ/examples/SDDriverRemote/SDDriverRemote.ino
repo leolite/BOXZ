@@ -8,12 +8,12 @@
 
 #include "BOXZ.h"
 
-int pin_in1 = 8;
-int pin_in2 = 11;
-int pin_in3 = 12;
-int pin_in4 = 13;
-int pin_pwmA = 9;
-int pin_pwmB = 10;
+//  int pin_in1 = 8;
+//  int pin_in2 = 11;
+//  int pin_in3 = 12;
+//  int pin_in4 = 13;
+//  int pin_pwmA = 9;
+//  int pin_pwmB = 10;
 int speedA_value = 255;
 int speedB_value = 255;
 int  key;
