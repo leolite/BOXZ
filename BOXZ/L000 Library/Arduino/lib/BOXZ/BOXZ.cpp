@@ -394,8 +394,9 @@ if(_driverMode == 4){
 }
 
 /*goRaw() mode
-You can control you motor with raw data, The format is b0101|0xFF|0xFF
+You can control you motor with raw data(Long int HEX), The format is b0101|0xFF|0xFF
 Here is a sample how to control 4 pin or 6 pin driver board, also if you known the sequence you can control other kinds of driver board
+If you want to goForward in 4 pin mode, you should send "262143", or "0x3FFFF"
 Byte 1(High): Control bit
 Byte 2-3: SpeedA from 0x00 to 0xFF
 Byte 4-5(Low): SpeedB  from 0x00 to 0xFF
@@ -459,6 +460,90 @@ void BOXZ::goRaw(unsigned long data)
     Serial.println(int(_in3Status),HEX);
     Serial.println(int(_in4Status),HEX);
     Serial.println("----END------");
+  }
+}
+
+/*goRaws() mode
+You can control you motor with raw data(String HEX). The format is b0101|0xFF|0xFF
+Input value is a string.
+If you want to goForward in 4 pin mode, you should send "3FFFF", not "0x3FFFF"
+*/
+void BOXZ::goRaws(String datas)
+{
+  int rawLength = 5; 			//valid length of string
+  unsigned long datain =0;		//data input 0xFFFFF
+  unsigned long power =1; 		//power of 16 such as 16^0, 16^1, 16^2...
+  int datasl = datas.length(); 	//Data string length
+
+  //String HEX to Long HEX
+    if (datasl >0 && datasl <= rawLength)
+  {
+    for(int n=datasl-1;n>=0;n--){
+      switch(datas.charAt(n)){
+      case '0':
+        datain += 0*power;
+        break;
+      case '1':
+        datain += 1*power;
+        break;
+      case '2':
+        datain += 2*power;
+        break;
+      case '3':
+        datain += 3*power;
+        break;
+      case '4':
+        datain += 4*power;
+        break;
+      case '5':
+        datain += 5*power;
+        break;
+      case '6':
+        datain += 6*power;
+        break;
+      case '7':
+        datain += 7*power;
+        break;
+      case '8':
+        datain += 8*power;
+        break;
+      case '9':
+        datain += 9*power;
+        break;
+      case 'A':
+        datain += 10*power;
+        break;
+      case 'B':
+        datain += 11*power;
+        break;
+      case 'C':
+        datain += 12*power;
+        break;
+      case 'D':
+        datain += 13*power;
+        break;
+      case 'E':
+        datain += 14*power;
+        break;
+      case 'F':
+        datain += 15*power;
+        break;
+      default: 
+        datain += 0;
+      }
+      power *= 16;
+    }
+	//DEBUG MODE
+    if(datain == 0&&DEBUG == 1){
+      Serial.print("ERROR: Unknown format: ");
+      Serial.println(datas);
+    }
+	//action
+    boxz.goRaw(datain);
+  }
+  else if (datasl >rawLength && DEBUG == 1){
+    Serial.print("ERROR: Unknown format: ");
+    Serial.println(datas);
   }
 }
 

@@ -8,8 +8,11 @@ http://creativecommons.org/licenses/by-nc-sa/3.0/
 */
 
 /*  Modified record:
+	Update: 20130730
+	1. add goRaws() for control by raw data(String HEX).
+	
 	Update: 20130729
-	1. add goRaw() for control by raw data.
+	1. add goRaw() for control by raw data(Long int HEX).
 	
 	Update: 20130728
 	1. add checkIO_ED() and checkIO_DF() for checking board type
@@ -64,6 +67,7 @@ public:
 	void goRight();
 	void stop();
     void goRaw(unsigned long data);
+	void goRaws(String datas);
 private:
 	boolean checkIO_ED(); //IO check for Seeed
 	boolean checkIO_DF(); //IO check for DFROBOT

@@ -18,6 +18,7 @@ goLeft	KEYWORD2
 goRight	KEYWORD2 
 stop	KEYWORD2
 goRaw	KEYWORD2
+goRaws	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
