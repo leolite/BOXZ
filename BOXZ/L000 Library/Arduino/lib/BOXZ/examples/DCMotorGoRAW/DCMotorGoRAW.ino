@@ -13,7 +13,7 @@
 /*goRaw() mode
 You can control you motor with raw data(Long int HEX), The format is b0101|0xFF|0xFF
 Here is a sample how to control 4 pin or 6 pin driver board, also if you known the sequence you can control other kinds of driver board
-If you want to goForward in 4 pin mode, you should send "262143", or "0x3FFFF"
+If you want to goForward in 4 pin mode, you should send "262143", not "0x3FFFF"
 Byte 1(High): Control bit
 Byte 2-3: SpeedA from 0x00 to 0xFF
 Byte 4-5(Low): SpeedB  from 0x00 to 0xFF

@@ -7,37 +7,25 @@ License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
 http://creativecommons.org/licenses/by-nc-sa/3.0/
 */
 
-/*******************************************************************************/
+/*Define
+- ini data
+0xAF: Adafruit
+0xDF: DFROBOT
+0xED: SEEED
+
+- RAW data
+Side A = Right motor
+Side B = Left motor
+
+The RAW format is 0xF|0xFF|0xFF
+Byte 1(High): Control bit
+Byte 2-3: SpeedA(Right) from 0x00 to 0xFF
+Byte 4-5(Low): SpeedB(Left) from 0x00 to 0xFF
+*/
+/******************************* I/O check function ************************************************/
 #include "BOXZ.h"
 
-//I/O check
-boolean BOXZ::checkIO_ED()
-{
-  int startPin = 8;
-  int endPin = 13;
-  boolean value[]={0,1,1,0,0,0};
-  boolean check[]={0,0,0,0,0,0};
-  int result = 1;
-  for(int i=startPin;i<=endPin;i++){
-    pinMode(i, OUTPUT);  
-    digitalWrite(i,1);
-    pinMode(i, INPUT);
-    check[i-startPin] = digitalRead(i);
-    if(check[i-startPin] != value[i-startPin]){
-      if(DEBUG ==1){
-        Serial.println("ERROR: It's not Seeed Motor Shield V2.0"); 
-      }
-      result = 0;
-	  return result;
-//      break;
-    }
-    if((result = 1)&&(DEBUG == 1)){
-      Serial.println("INFO: Driver board checked done! Type: Seeed Motor Shield V2.0"); 
-    }
-    return result;
-  }
-}
-
+//I/O check 4 Pin mode 0xDF: DFROBOT
 boolean BOXZ::checkIO_DF()
 {
   int startPin = 4;
@@ -65,8 +53,67 @@ boolean BOXZ::checkIO_DF()
   }
 }
 
+//I/O check 6 pin mode 0xED: SEEED
+boolean BOXZ::checkIO_ED()
+{
+  int startPin = 8;
+  int endPin = 13;
+  boolean value[]={0,1,1,0,0,0};
+  boolean check[]={0,0,0,0,0,0};
+  int result = 1;
+  for(int i=startPin;i<=endPin;i++){
+    pinMode(i, OUTPUT);  
+    digitalWrite(i,1);
+    pinMode(i, INPUT);
+    check[i-startPin] = digitalRead(i);
+    if(check[i-startPin] != value[i-startPin]){
+      if(DEBUG ==1){
+        Serial.println("ERROR: It's not Seeed Motor Shield V2.0"); 
+      }
+      result = 0;
+	  return result;
+//      break;
+    }
+    if((result = 1)&&(DEBUG == 1)){
+      Serial.println("INFO: Driver board checked done! Type: Seeed Motor Shield V2.0"); 
+    }
+    return result;
+  }
+}
+
+//Double I/O check 8 pin mode 0xAF: Adafruit
+boolean BOXZ::checkIO_AF()
+{
+  int startPin = 3;
+  int endPin = 12;
+  boolean value[]={1,1,1,1,1,1,0,0,1,1}; //Pin mode Output->Input value, don't check servo pin PWM1A and PWM1B
+  boolean check[]={0,0,0,0,0,0,0,0,0,0}; //check pin status
+  int result = 1;
+  for(int i=startPin;i<=endPin;i++){
+  if(i == 9 || i == 10) continue; //don't check servo pin PWM1A and PWM1B
+    pinMode(i, OUTPUT);  
+    digitalWrite(i,1);
+    pinMode(i, INPUT);
+    check[i-startPin] = digitalRead(i);
+    if(check[i-startPin] != value[i-startPin]){
+      if(DEBUG ==1){
+        Serial.println("ERROR: It's not Adafruit Motor Shield V2.0"); 
+      }
+      result = 0;
+	  return result;
+    }
+  }
+
+  if((result = 1)&&(DEBUG == 1)){
+      Serial.println("INFO: Driver board checked done! Type: Adafruit Motor Shield"); 
+    }
+    return result;
+}
+
+/******************************* initialization function ************************************************/
 
 //initialization
+//init for 4 Pin Motor Driver
 //DFRobot 4,7,5,6
 void BOXZ::init(int inA, int inB, int pwmA, int pwmB)
 {
@@ -82,6 +129,7 @@ void BOXZ::init(int inA, int inB, int pwmA, int pwmB)
 	stop();
 }
 
+////init for 6 Pin Motor Driver
 void BOXZ::init(int in1, int in2, int in3, int in4, int pwmA, int pwmB)
 {
 	pinMode(in1,OUTPUT);
@@ -100,6 +148,43 @@ void BOXZ::init(int in1, int in2, int in3, int in4, int pwmA, int pwmB)
 	stop();
 }
 
+//init for 8 Pin Adafruit Motor Driver
+void BOXZ::initAFMotor(){
+  pinMode( AF_DIR_LATCH, OUTPUT) ;
+  pinMode( AF_DIR_CLK, OUTPUT) ;
+  pinMode( AF_DIR_EN, OUTPUT) ;
+  pinMode( AF_DIR_SER, OUTPUT) ;
+  digitalWrite( AF_DIR_EN, LOW);
+  if(AF_GROUP == 2)
+  {
+    _in1Status = AFM3F;
+    _in2Status = AFM3B;
+    _in3Status = AFM4F;
+    _in4Status = AFM4B;
+    _pwmA = AF_PWM0A;
+    _pwmB = AF_PWM0B;
+    if(DEBUG ==1){
+      Serial.println("Motor Group 02");
+    }
+  }
+  //Default mode Group 1 actived M1 and M2
+  else{
+    _in1Status = AFM1F;
+    _in2Status = AFM1B;
+    _in3Status = AFM2F;
+    _in4Status = AFM2B;
+    _pwmA = AF_PWM2B; 
+    _pwmB = AF_PWM2A;
+    if(DEBUG ==1){
+      Serial.println("Motor Group 01");
+    }
+
+  }
+  _driverMode = 8;
+  stop();
+}
+
+//automatic init with check IO function
 boolean BOXZ::init()
 {
     if(checkIO_DF() == 1){
@@ -108,24 +193,23 @@ boolean BOXZ::init()
     }else if(checkIO_ED() == 1){
       init(SD_IN1,SD_IN2,SD_IN3,SD_IN4,SD_SPEEDA,SD_SPEEDB);
 	  return true;
+    }else if(checkIO_AF() == 1){
+      initAFMotor();
+	  return true;
     }else{
 	return false;
 	}
 }
 
-
-
+//init by keyword, include check IO function
 boolean BOXZ::init(int type)
 {
+  //Keyword is DFROBOT
   if(type ==0xDF){
     //checking I/O
     if(checkIO_DF() == 1){
       //Define I/O
       init(DF_INA,DF_INB,DF_SPEEDA,DF_SPEEDB);
-      //Output
-//      if(DEBUG ==1){
-//       Serial.println("INFO: DFRobot L298N shield configured done!");
-//      }
       return true;
     }
     else{
@@ -135,15 +219,27 @@ boolean BOXZ::init(int type)
       return false;
     }
   }
+  //Keyword is SEEED
   else if(type ==0xED){
     //checking I/O
     if(checkIO_ED() == 1){
       //Define I/O
       init(SD_IN1,SD_IN2,SD_IN3,SD_IN4,SD_SPEEDA,SD_SPEEDB);
-      //Output
-//      if(DEBUG ==1){
-//        Serial.println("INFO: Seeed L298N shield configured done");
-//      }
+      return true;
+    }
+    else{
+      if(DEBUG ==1){
+        Serial.println("ERROR:Unknown type driver board");
+      }
+      return false;
+    }
+  }
+  //Keyword is Adafruit
+  else if(type ==0xAF){
+    //checking I/O
+    if(checkIO_AF() == 1){
+      //Define I/O
+      initAFMotor();
       return true;
     }
     else{
@@ -161,242 +257,429 @@ boolean BOXZ::init(int type)
   }
 }
 
-/*************************************************************/
-
-
+/****************************direction of motion control function*********************************/
+//Control BOXZ go forward
 void BOXZ::goForward()
 {
-if(_driverMode == 4){
-	digitalWrite(_inA,HIGH);
+  if(_driverMode == 4){
+    digitalWrite(_inA,HIGH);
     digitalWrite(_inB,HIGH);
-	analogWrite(_pwmA,DEFAULT_SPEED);
-	analogWrite(_pwmB,DEFAULT_SPEED);
-	if(DEBUG == 1) Serial.println("FORWARD");
-}else if(_driverMode == 6){
-	digitalWrite(_in1,HIGH);
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(DEBUG == 1) Serial.println("FORWARD");
+  }
+  else if(_driverMode == 6){
+    digitalWrite(_in1,HIGH);
     digitalWrite(_in2,LOW);
-	digitalWrite(_in3,LOW);
+    digitalWrite(_in3,LOW);
     digitalWrite(_in4,HIGH);
-	analogWrite(_pwmA,DEFAULT_SPEED);
-	analogWrite(_pwmB,DEFAULT_SPEED);
-	if(DEBUG == 1) Serial.println("FORWARD");
-	}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(DEBUG == 1) Serial.println("FORWARD");
+  }
+  else if(_driverMode == 8){
+    _AFMstatus = _in1Status | _in3Status;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    Serial.println(_AFMstatus);
+    if(DEBUG == 1) Serial.println("FORWARD");
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
 }
 
+//Control BOXZ go backward
 void BOXZ::goBackward()
 {
-if(_driverMode == 4){
-	digitalWrite(_inA,LOW);
+  if(_driverMode == 4){
+    digitalWrite(_inA,LOW);
     digitalWrite(_inB,LOW);
-	analogWrite(_pwmA,DEFAULT_SPEED);
-	analogWrite(_pwmB,DEFAULT_SPEED);
-	if(DEBUG == 1) Serial.println("BACKWARD");
-}else if(_driverMode == 6){
-	digitalWrite(_in1,LOW);
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(DEBUG == 1) Serial.println("BACKWARD");
+  }
+  else if(_driverMode == 6){
+    digitalWrite(_in1,LOW);
     digitalWrite(_in2,HIGH);
-	digitalWrite(_in3,HIGH);
+    digitalWrite(_in3,HIGH);
     digitalWrite(_in4,LOW);
-	analogWrite(_pwmA,DEFAULT_SPEED);
-	analogWrite(_pwmB,DEFAULT_SPEED);
-	if(DEBUG == 1) Serial.println("BACKWARD");
-	}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(DEBUG == 1) Serial.println("BACKWARD");
+  }
+  else if(_driverMode == 8){
+    _AFMstatus = _in2Status | _in4Status;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    Serial.println(_AFMstatus);
+    if(DEBUG == 1) Serial.println("BACKWARD");
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
 }
 
+//Control BOXZ turn left
 void BOXZ::goLeft()
 {
-if(_driverMode == 4){
-	digitalWrite(_inA,HIGH);
+  if(_driverMode == 4){
+    digitalWrite(_inA,HIGH);
     digitalWrite(_inB,LOW);
-	analogWrite(_pwmA,DEFAULT_SPEED);
-	analogWrite(_pwmB,DEFAULT_SPEED);
-	if(DEBUG == 1) Serial.println("LEFT");
-}else if(_driverMode == 6){
-	digitalWrite(_in1,HIGH);
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(DEBUG == 1) Serial.println("LEFT");
+  }
+  else if(_driverMode == 6){
+    digitalWrite(_in1,HIGH);
     digitalWrite(_in2,LOW);
-	digitalWrite(_in3,HIGH);
+    digitalWrite(_in3,HIGH);
     digitalWrite(_in4,LOW);
-	analogWrite(_pwmA,DEFAULT_SPEED);
-	analogWrite(_pwmB,DEFAULT_SPEED);
-	if(DEBUG == 1) Serial.println("LEFT");
-	}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(DEBUG == 1) Serial.println("LEFT");
+  }
+  else if(_driverMode == 8){
+    _AFMstatus = _in2Status | _in3Status;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    Serial.println(_AFMstatus);
+    if(DEBUG == 1) Serial.println("LEFT");
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
 }
 
+//Control BOXZ turn right
 void BOXZ::goRight()
 {
-if(_driverMode == 4){
-	digitalWrite(_inA,LOW);
+  if(_driverMode == 4){
+    digitalWrite(_inA,LOW);
     digitalWrite(_inB,HIGH);
-	analogWrite(_pwmA,DEFAULT_SPEED);
-	analogWrite(_pwmB,DEFAULT_SPEED);
-	if(DEBUG == 1) Serial.println("LEFT");
-}else if(_driverMode == 6){
-	digitalWrite(_in1,LOW);
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(DEBUG == 1) Serial.println("LEFT");
+  }
+  else if(_driverMode == 6){
+    digitalWrite(_in1,LOW);
     digitalWrite(_in2,HIGH);
-	digitalWrite(_in3,LOW);
+    digitalWrite(_in3,LOW);
     digitalWrite(_in4,HIGH);
-	analogWrite(_pwmA,DEFAULT_SPEED);
-	analogWrite(_pwmB,DEFAULT_SPEED);
-	if(DEBUG == 1) Serial.println("LEFT");
-	}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(DEBUG == 1) Serial.println("LEFT");
+  }
+  else if(_driverMode == 8){
+    _AFMstatus = _in1Status | _in4Status;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    analogWrite(_pwmA,DEFAULT_SPEED);
+    analogWrite(_pwmB,DEFAULT_SPEED);
+    Serial.println(_AFMstatus);
+    if(DEBUG == 1) Serial.println("RIGHT");
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
 }
 
-/**********************SPEED Control******************************/
+
+/****************************direction of speed control function*********************************/
+//Control BOXZ go forward with speed control
 void BOXZ::goForward(int speedA, int speedB)
 {
-if(_driverMode == 4){
-	digitalWrite(_inA,HIGH);
+  if(_driverMode == 4){
+    digitalWrite(_inA,HIGH);
     digitalWrite(_inB,HIGH);
-	analogWrite(_pwmA,speedA);
-	analogWrite(_pwmB,speedB);
-	if(DEBUG == 1) {
-    Serial.print(speedA);
-    Serial.print(",");
-    Serial.print(speedB);
-    Serial.println(",FORWARD");
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",FORWARD");
+    }
   }
-}else if(_driverMode == 6){
-	digitalWrite(_in1,HIGH);
+  else if(_driverMode == 6){
+    digitalWrite(_in1,HIGH);
     digitalWrite(_in2,LOW);
-	digitalWrite(_in3,LOW);
+    digitalWrite(_in3,LOW);
     digitalWrite(_in4,HIGH);
-	analogWrite(_pwmA,speedA);
-	analogWrite(_pwmB,speedB);
-	if(DEBUG == 1) {
-    Serial.print(speedA);
-    Serial.print(",");
-    Serial.print(speedB);
-    Serial.println(",FORWARD");
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",FORWARD");
+    }
   }
-}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
+  else if(_driverMode == 8){
+    _AFMstatus = _in1Status | _in3Status;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",FORWARD");
+    }
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
 }
 
-
+//Control BOXZ go backward with speed control
 void BOXZ::goBackward(int speedA, int speedB)
 {
-if(_driverMode == 4){
-	digitalWrite(_inA,LOW);
+  if(_driverMode == 4){
+    digitalWrite(_inA,LOW);
     digitalWrite(_inB,LOW);
-	analogWrite(_pwmA,speedA);
-	analogWrite(_pwmB,speedB);
-	if(DEBUG == 1)   {
-    Serial.print(speedA);
-    Serial.print(",");
-    Serial.print(speedB);
-    Serial.println(",BACKWARD");
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1)   {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",BACKWARD");
+    }
   }
-}else if(_driverMode == 6){
-	digitalWrite(_in1,LOW);
+  else if(_driverMode == 6){
+    digitalWrite(_in1,LOW);
     digitalWrite(_in2,HIGH);
-	digitalWrite(_in3,HIGH);
+    digitalWrite(_in3,HIGH);
     digitalWrite(_in4,LOW);
-	analogWrite(_pwmA,speedA);
-	analogWrite(_pwmB,speedB);
-	if(DEBUG == 1)   {
-    Serial.print(speedA);
-    Serial.print(",");
-    Serial.print(speedB);
-    Serial.println(",BACKWARD");
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1)   {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",BACKWARD");
+    }
   }
-}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
+  else if(_driverMode == 8){
+    _AFMstatus = _in2Status | _in4Status;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1)   {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",BACKWARD");
+    }
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
 }
 
+//Control BOXZ turn left with speed control
 void BOXZ::goLeft(int speedA, int speedB)
 {
-if(_driverMode == 4){
-	digitalWrite(_inA,HIGH);
+  if(_driverMode == 4){
+    digitalWrite(_inA,HIGH);
     digitalWrite(_inB,LOW);
-	analogWrite(_pwmA,speedA);
-	analogWrite(_pwmB,speedB);
-	if(DEBUG == 1) {
-    Serial.print(speedA);
-    Serial.print(",");
-    Serial.print(speedB);
-    Serial.println(",LEFT");
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",LEFT");
+    }
   }
-}else if(_driverMode == 6){
-	digitalWrite(_in1,HIGH);
+  else if(_driverMode == 6){
+    digitalWrite(_in1,HIGH);
     digitalWrite(_in2,LOW);
-	digitalWrite(_in3,HIGH);
+    digitalWrite(_in3,HIGH);
     digitalWrite(_in4,LOW);
-	analogWrite(_pwmA,speedA);
-	analogWrite(_pwmB,speedB);
-	if(DEBUG == 1) {
-    Serial.print(speedA);
-    Serial.print(",");
-    Serial.print(speedB);
-    Serial.println(",LEFT");
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",LEFT");
+    }
   }
-}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
+  else if(_driverMode == 8){
+    _AFMstatus = _in2Status | _in3Status;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",LEFT");
+    }
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
 }
 
+//Control BOXZ turn right with speed control
 void BOXZ::goRight(int speedA, int speedB)
 {
-if(_driverMode == 4){
-	digitalWrite(_inA,LOW);
+  if(_driverMode == 4){
+    digitalWrite(_inA,LOW);
     digitalWrite(_inB,HIGH);
-	analogWrite(_pwmA,speedA);
-	analogWrite(_pwmB,speedB);
-	if(DEBUG == 1) {
-    Serial.print(speedA);
-    Serial.print(",");
-    Serial.print(speedB);
-    Serial.println(",RIGHT");
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",RIGHT");
+    }
   }
-}else if(_driverMode == 6){
-	digitalWrite(_in1,LOW);
+  else if(_driverMode == 6){
+    digitalWrite(_in1,LOW);
     digitalWrite(_in2,HIGH);
-	digitalWrite(_in3,LOW);
+    digitalWrite(_in3,LOW);
     digitalWrite(_in4,HIGH);
-	analogWrite(_pwmA,speedA);
-	analogWrite(_pwmB,speedB);
-	if(DEBUG == 1) {
-    Serial.print(speedA);
-    Serial.print(",");
-    Serial.print(speedB);
-    Serial.println(",RIGHT");
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",RIGHT");
+    }
   }
-}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
+  else if(_driverMode == 8){
+    _AFMstatus = _in1Status | _in4Status;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    analogWrite(_pwmA,speedA);
+    analogWrite(_pwmB,speedB);
+    if(DEBUG == 1) {
+      Serial.print(speedA);
+      Serial.print(",");
+      Serial.print(speedB);
+      Serial.println(",RIGHT");
+    }
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
 }
 
+/****************************stop control function*********************************/
+
+void BOXZ::motorCom(int keyword)
+{
+  switch (keyword){
+  case 'w':
+    boxz.goForward();
+    break;
+  case 's':
+    boxz.goBackward();
+    break;
+  case 'a':
+    boxz.goLeft();
+    break;
+  case 'd':
+    boxz.goRight();
+    break;
+  case ' ':
+    boxz.stop();
+    break;
+  default :
+    boxz.stop();
+    return;
+  }
+}
+
+void BOXZ::motorCom(int keyword, int speedA, int speedB)
+{
+  switch (keyword){
+  case 'w':
+    boxz.goForward(speedA,speedB);
+    break;
+  case 's':
+    boxz.goBackward(speedA,speedB);
+    break;
+  case 'a':
+    boxz.goLeft(speedA,speedB);
+    break;
+  case 'd':
+    boxz.goRight(speedA,speedB);
+    break;
+  case ' ':
+    boxz.stop();
+    break;
+  default :
+    boxz.stop();
+    return;
+  }
+}
+
+void BOXZ::ServoCom(int keyword)
+{
+}
+/****************************BOXZ base keyword mode function*********************************/
 void BOXZ::stop()
 {
-if(_driverMode == 4){
-	/*Unenble the pin, to stop the motor. */
-	digitalWrite(_pwmA,LOW);
+  if(_driverMode == 4){
+    /*disable the enble pin, to stop the motor. */
+    digitalWrite(_pwmA,LOW);
     digitalWrite(_pwmB,LOW);
-}else if(_driverMode == 6){
-	digitalWrite(_in1,HIGH);
+  }
+  else if(_driverMode == 6){
+    digitalWrite(_in1,HIGH);
     digitalWrite(_in2,HIGH);
-	digitalWrite(_in3,HIGH);
+    digitalWrite(_in3,HIGH);
     digitalWrite(_in4,HIGH);
-	digitalWrite(_pwmA,LOW);
+    digitalWrite(_pwmA,LOW);
     digitalWrite(_pwmB,LOW);
-}else{
-	if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
-	}	
-//	if(DEBUG == 1) Serial.println("STOP");
+  }
+  else if(_driverMode == 8){
+    _AFMstatus = 0xFF;
+    digitalWrite(AF_DIR_LATCH, LOW);
+    shiftOut(AF_DIR_SER, AF_DIR_CLK, LSBFIRST, _AFMstatus);   
+    digitalWrite(AF_DIR_LATCH, HIGH);
+    digitalWrite(_pwmA,LOW);
+    digitalWrite(_pwmB,LOW);
+  }
+  else{
+    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+  }	
+  //	if(DEBUG == 1) Serial.println("STOP");
 }
 
+
+
+/****************************RAW control function*********************************/
+
+
 /*goRaw() mode
-You can control you motor with raw data(Long int HEX), The format is b0101|0xFF|0xFF
+You can control you motor with raw data(Long int HEX), The format is 0xF|0xFF|0xFF
 Here is a sample how to control 4 pin or 6 pin driver board, also if you known the sequence you can control other kinds of driver board
-If you want to goForward in 4 pin mode, you should send "262143", or "0x3FFFF"
+If you want to goForward in 4 pin mode, you should send "262143", not "0x3FFFF"
 Byte 1(High): Control bit
 Byte 2-3: SpeedA from 0x00 to 0xFF
 Byte 4-5(Low): SpeedB  from 0x00 to 0xFF
@@ -419,20 +702,20 @@ void BOXZ::goRaw(unsigned long data)
   //Data convert
   int controlByte;
   //Right speed
-  _speedA = data & 0x000000FF;
+  _speedA = data & 0x000000FF; //_speedA = lowByte(data)
   //Left speed
   data= data >> 8;
-  _speedB = data & 0x000000FF;
+  _speedB = data & 0x000000FF; //_speedB = highByte(data)
   //Control bit
   data= data >> 8;
   controlByte = data & 0x000000FF;
-  _in4Status = data & 0x00000001;
+  _in4Status = data & 0x00000001; //_in1Status = bitRead(data, 16)
   data= data >> 1;
-  _in3Status = data & 0x00000001;
+  _in3Status = data & 0x00000001; //_in1Status = bitRead(data, 17)
   data= data >> 1;
-  _in2Status = data & 0x00000001;
+  _in2Status = data & 0x00000001; //_in1Status = bitRead(data, 18)
   data= data >> 1;
-  _in1Status = data & 0x00000001;
+  _in1Status = data & 0x00000001; //_in1Status = bitRead(data, 19)
   //Output
   if(_driverMode == 4){
     digitalWrite(_inA,_in3Status);
@@ -464,7 +747,7 @@ void BOXZ::goRaw(unsigned long data)
 }
 
 /*goRaws() mode
-You can control you motor with raw data(String HEX). The format is b0101|0xFF|0xFF
+You can control you motor with raw data(String HEX). The format is 0xF|0xFF|0xFF
 Input value is a string.
 If you want to goForward in 4 pin mode, you should send "3FFFF", not "0x3FFFF"
 */
