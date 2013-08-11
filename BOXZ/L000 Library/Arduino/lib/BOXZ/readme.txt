@@ -6,6 +6,9 @@ https://github.com/leolite/BOXZ
 License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
 http://creativecommons.org/licenses/by-nc-sa/3.0/
 
+Wiki Chinese
+http://wiki.geek-workshop.com/doku.php?id=arduino:libraries:boxz
+
 Hardware support list: 
 1. DFRobot L298 Shield 2A
 2. DFRobot L293 Shield 1A
