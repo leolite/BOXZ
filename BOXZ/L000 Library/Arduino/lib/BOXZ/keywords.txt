@@ -18,10 +18,17 @@ goBackward	KEYWORD2
 goLeft	KEYWORD2 
 goRight	KEYWORD2 
 stop	KEYWORD2
-motorCom	KEYWORD2
-servoCom	KEYWORD2
 goRaw	KEYWORD2
 goRaws	KEYWORD2
+initServo	KEYWORD2
+servo01Up	KEYWORD2
+servo02Up	KEYWORD2
+servo01Down	KEYWORD2
+servo02Down	KEYWORD2
+motorCom	KEYWORD2
+servoCom	KEYWORD2
+servoRaw	KEYWORD2
+servoRaws	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################

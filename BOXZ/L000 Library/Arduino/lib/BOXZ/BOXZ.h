@@ -3,13 +3,31 @@ BOXZ.h - Library for general robot control.
 Created by Leo.Zhu, 21 July, 2013.
 https://github.com/leolite/BOXZ
 
+Wiki Chinese:
+http://wiki.geek-workshop.com/doku.php?id=arduino:libraries:boxz
+
 License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
 http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+Include follow library
+  Servo.h - Interrupt driven Servo library for Arduino using 16 bit timers- Version 2
+  Copyright (c) 2009 Michael Margolis.  All right reserved.
 */
 
 /*  Modified record:
+	Updata: 20130814
+	1. add servoRaw()
+	2. add servoRaws()
+	3. Update servoCom()(Both servo action) and motorCom()(add Key Q and E)
+	4. Update goRaw() and go Raws()
+	
+	Updata: 20130812
+	1. add Servo function(SEEED drive board not support Servo, because of disable PWM of Pin 9 and 10)
+	2. add servoCom()
+	3. Update motorCom() (servo could action when motor is running)
+	
 	Updata: 20130810
-	1. Support for Adafruit Motor Drive
+	1. Support for Adafruit Motor Drive(not support RAW)
 	2. add checkIO_AF()
 	3. add initAFMotor()
 	
@@ -35,6 +53,9 @@ http://creativecommons.org/licenses/by-nc-sa/3.0/
 #else
 #include <WProgram.h>
 #endif
+
+#include <Servo.h> 
+
 
 #define DEBUG			1
 #define PREACCELERATION	1  //not ready yet
@@ -83,11 +104,25 @@ http://creativecommons.org/licenses/by-nc-sa/3.0/
 #define AFM4F 		1;
 #define AFM4B 		4;
 
+/*------------------------------------------------------------------
+ define servo
+ D9  Left hand(servo 01)
+ D10 Right hand(servo 02)
+ ------------------------------------------------------------------*/
+#define SERVO_PIN01			9;
+#define SERVO_PIN02			10;
+#define SERVO_POS01 		20; // middle position
+#define SERVO_POS02 		20; // middle position
+#define SERVO_POSMIN 		20; // min position is 0
+#define SERVO_POSMAX 		160; // max position is 180
+#define SERVO_DELAY 		1;  //[modifid]delay speed of hand
+#define SERVO_FRAME 		20;  //[modifid]
 
 /**Class for motor control**/
 class BOXZ
 {
 public:
+	//motor control
 	boolean init();  //Automatic check board
 	boolean init(int type);
 	void init(int inA, int inB, int pwmA, int pwmB);
@@ -104,10 +139,32 @@ public:
 	void stop();
 	void motorCom(int keyword); //Support for BOXZ Base
 	void motorCom(int keyword, int speedA, int speedB); //Support for BOXZ Base with speed control
-	void ServoCom(int keyword); //Support for BOXZ Base
     void goRaw(unsigned long data);
 	void goRaws(String datas);
+
+	//servo control
+	Servo servo01;  // create servo object to control a servo 
+	Servo servo02;  // create servo object to control a servo
+
+	void initServo();
+	void initServo(int pin01,int pin02);
+	void initServo(int pin01,int pin02, int posMin, int posMax);
+	void servo01Up();
+	void servo02Up();
+	void servo01Down();
+	void servo02Down();
+	void servo01Up(int type);
+	void servo02Up(int type);
+	void servo01Down(int type);
+	void servo02Down(int type);
+	void servoCom(int keyword); //Support for BOXZ Pro
+	void servoRaw(unsigned long data);
+	void servoRaws(String datas);
+	
+
+		
 private:
+	//Motor
 	boolean checkIO_ED(); //IO check for Seeed
 	boolean checkIO_DF(); //IO check for DFROBOT
 	boolean checkIO_AF(); //IO check for Adafruit
@@ -129,6 +186,22 @@ private:
 	int _AFMstatus; //status for Adafruit Motor Driver 74HC595 data
 	int _speedA;
 	int _speedB;
+	
+	//servo
+	int _servoPosMax;
+	int _servoPosMin;
+	int _servoPos01;
+	int _servoPos02;
+	int _servoTar01; //Target Positon
+	int _servoTar02; //Target Positon
+	int _servoAct01; //actived
+	int _servoAct02; //actived
+	int _servoDis01; //Distance
+	int _servoDis02; //Distance
+	int _servoFra01; //Frame Distance
+	int _servoFra02; //Frame Distance
+	int _servoDelay;
+	int _servoFrame;
 };
 
 extern BOXZ boxz;

@@ -1,4 +1,4 @@
-Library for general robot control
+Library for BOXZ - General Robot Control
 
 Created by Leo.Zhu, 21 July, 2013.
 https://github.com/leolite/BOXZ
@@ -9,7 +9,10 @@ http://creativecommons.org/licenses/by-nc-sa/3.0/
 Wiki Chinese
 http://wiki.geek-workshop.com/doku.php?id=arduino:libraries:boxz
 
-Hardware support list: 
+Include follow library
+  Servo.h - Interrupt driven Servo library for Arduino using 16 bit timers- Version 2
+
+Hardware automatic ini() support list: 
 1. DFRobot L298 Shield 2A
 2. DFRobot L293 Shield 1A
 3. Seeed Motor Shield V2.0
@@ -20,8 +23,19 @@ Known issues:
 
 
 Modified record:
+Updata: 20130814
+1. add servoRaw()
+2. add servoRaws()
+3. Update servoCom()(Both servo action) and motorCom()(add Key Q and E)
+4. Update goRaw() and go Raws()
+
+Updata: 20130812
+1. add Servo function(SEEED drive board not support Servo, because of disable PWM of Pin 9 and 10)
+2. add servoCom()
+3. Update motorCom() (servo could action when motor is running)
+
 Updata: 20130810
-1. Support for Adafruit Motor Drive
+1. Support for Adafruit Motor Drive(not support RAW)
 2. add checkIO_AF()
 3. add initAFMotor()
 

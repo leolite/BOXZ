@@ -8,6 +8,13 @@
 //  2. DFRobot L293 Shield 1A
 //  3. Seeed Motor Shield V2.0
 //  4. Adafruit Motor Drive
+//  Key define
+//  'w' - Go forward
+//  's' - Go backward
+//  'a' - Go left
+//  'd' - Go right
+//  'q' - Go left avertence
+//  'e' - Go right avertence
 
 #include "BOXZ.h"
 
