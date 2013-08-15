@@ -9,7 +9,7 @@ http://wiki.geek-workshop.com/doku.php?id=arduino:libraries:boxz
 License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
 http://creativecommons.org/licenses/by-nc-sa/3.0/
 
-Include follow library
+Include following library
   Servo.h - Interrupt driven Servo library for Arduino using 16 bit timers- Version 2
   Copyright (c) 2009 Michael Margolis.  All right reserved.
 */
