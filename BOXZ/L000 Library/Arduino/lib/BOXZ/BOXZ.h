@@ -15,6 +15,11 @@ Include following library
 */
 
 /*  Modified record:
+	Updata: 20130816
+	1. goRaw() renamed with motorRaw()
+	2. goRaws() renamed with motorRaws()
+	3. init() renamed with initMotor()
+	
 	Updata: 20130814
 	1. add servoRaw()
 	2. add servoRaws()
@@ -123,10 +128,10 @@ class BOXZ
 {
 public:
 	//motor control
-	boolean init();  //Automatic check board
-	boolean init(int type);
-	void init(int inA, int inB, int pwmA, int pwmB);
-	void init(int in1, int in2, int in3, int in4, int pwmA, int pwmB);
+	boolean initMotor();  //Automatic check board
+	boolean initMotor(int type);
+	void initMotor(int inA, int inB, int pwmA, int pwmB);
+	void initMotor(int in1, int in2, int in3, int in4, int pwmA, int pwmB);
 	void initAFMotor(); //initialization for Adafruit Motor Driver
 	void goForward(int speedA, int speedB);
 	void goBackward(int speedA, int speedB);
@@ -139,8 +144,8 @@ public:
 	void stop();
 	void motorCom(int keyword); //Support for BOXZ Base
 	void motorCom(int keyword, int speedA, int speedB); //Support for BOXZ Base with speed control
-    void goRaw(unsigned long data);
-	void goRaws(String datas);
+    void motorRaw(unsigned long data);
+	void motorRaws(String datas);
 
 	//servo control
 	Servo servo01;  // create servo object to control a servo 

@@ -23,7 +23,7 @@ int  key;
 void setup()
 {
   Serial.begin(9600);
-  boxz.init();
+  boxz.initMotor();
   Serial.println("Hello! BOXZ!");
 }
 

@@ -137,7 +137,7 @@ boolean BOXZ::checkIO_AF()
 //initialization
 //init for 4 Pin Motor Driver
 //DFRobot 4,7,5,6
-void BOXZ::init(int inA, int inB, int pwmA, int pwmB)
+void BOXZ::initMotor(int inA, int inB, int pwmA, int pwmB)
 {
 	pinMode(inA,OUTPUT);
 	pinMode(inB,OUTPUT);
@@ -152,7 +152,7 @@ void BOXZ::init(int inA, int inB, int pwmA, int pwmB)
 }
 
 ////init for 6 Pin Motor Driver
-void BOXZ::init(int in1, int in2, int in3, int in4, int pwmA, int pwmB)
+void BOXZ::initMotor(int in1, int in2, int in3, int in4, int pwmA, int pwmB)
 {
 	pinMode(in1,OUTPUT);
 	pinMode(in2,OUTPUT);
@@ -207,13 +207,13 @@ void BOXZ::initAFMotor(){
 }
 
 //automatic init with check IO function
-boolean BOXZ::init()
+boolean BOXZ::initMotor()
 {
     if(checkIO_DF() == 1){
-      init(DF_INA,DF_INB,DF_SPEEDA,DF_SPEEDB);
+      initMotor(DF_INA,DF_INB,DF_SPEEDA,DF_SPEEDB);
 	  return true;
     }else if(checkIO_ED() == 1){
-      init(SD_IN1,SD_IN2,SD_IN3,SD_IN4,SD_SPEEDA,SD_SPEEDB);
+      initMotor(SD_IN1,SD_IN2,SD_IN3,SD_IN4,SD_SPEEDA,SD_SPEEDB);
 	  return true;
     }else if(checkIO_AF() == 1){
       initAFMotor();
@@ -224,14 +224,14 @@ boolean BOXZ::init()
 }
 
 //init by keyword, include check IO function
-boolean BOXZ::init(int type)
+boolean BOXZ::initMotor(int type)
 {
   //Keyword is DFROBOT
   if(type ==0xDF){
     //checking I/O
     if(checkIO_DF() == 1){
       //Define I/O
-      init(DF_INA,DF_INB,DF_SPEEDA,DF_SPEEDB);
+      initMotor(DF_INA,DF_INB,DF_SPEEDA,DF_SPEEDB);
       return true;
     }
     else{
@@ -246,7 +246,7 @@ boolean BOXZ::init(int type)
     //checking I/O
     if(checkIO_ED() == 1){
       //Define I/O
-      init(SD_IN1,SD_IN2,SD_IN3,SD_IN4,SD_SPEEDA,SD_SPEEDB);
+      initMotor(SD_IN1,SD_IN2,SD_IN3,SD_IN4,SD_SPEEDA,SD_SPEEDB);
       return true;
     }
     else{
@@ -645,7 +645,7 @@ void BOXZ::stop()
 /****************************RAW control function*********************************/
 
 
-/*goRaw() mode
+/*motorRaw() mode
 You can control you motor with raw data(Long int HEX), The format is 0xF|0xFF|0xFF
 Here is a sample how to control 4 pin or 6 pin driver board, also if you known the sequence you can control other kinds of driver board
 If you want to goForward in 4 pin mode, you should send "262143", not "0x3FFFF"
@@ -666,7 +666,7 @@ goRight
 6P: 0x5FFFF = 393215
 */
 
-void BOXZ::goRaw(unsigned long data)
+void BOXZ::motorRaw(unsigned long data)
 {
   
   _speedA = lowByte(data); //Right speed
@@ -704,12 +704,12 @@ void BOXZ::goRaw(unsigned long data)
   }
 }
 
-/*goRaws() mode
+/*motorRaws() mode
 You can control you motor with raw data(String HEX). The format is 0xF|0xFF|0xFF
 Input value is a string.
 If you want to goForward in 4 pin mode, you should send "3FFFF", not "0x3FFFF"
 */
-void BOXZ::goRaws(String datas)
+void BOXZ::motorRaws(String datas)
 {
   int rawLength = 5; 			//valid length of string
   int data; 					//character of data
@@ -737,7 +737,7 @@ void BOXZ::goRaws(String datas)
       Serial.println(datas);
     }
 	//action
-    boxz.goRaw(datain);
+    boxz.motorRaw(datain);
   }
   else if (datasl >rawLength && DEBUG == 1){
     Serial.print("ERROR: Unknown format: ");

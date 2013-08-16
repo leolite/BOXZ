@@ -18,7 +18,7 @@ int speedB_value = 150;
 
 void setup()
 {
-  boxz.init(pin_inA,pin_inB,pin_pwmA,pin_pwmB);
+  boxz.initMotor(pin_inA,pin_inB,pin_pwmA,pin_pwmB);
 }
 
 void loop()

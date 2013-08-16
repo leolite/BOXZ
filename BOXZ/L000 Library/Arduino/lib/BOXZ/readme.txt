@@ -23,6 +23,11 @@ Known issues:
 
 
 Modified record:
+Updata: 20130816
+1. goRaw() renamed with motorRaw()
+2. goRaws() renamed with motorRaws()
+3. init() renamed with initMotor()
+
 Updata: 20130814
 1. add servoRaw()
 2. add servoRaws()

@@ -20,7 +20,7 @@ int speedB_value = 150;
 void setup()
 {
   Serial.begin(9600);
-  boxz.init(pin_inA,pin_inB,pin_pwmA,pin_pwmB);
+  boxz.initMotor(pin_inA,pin_inB,pin_pwmA,pin_pwmB);
   Serial.println("Hello! BOXZ!");
 }
 

@@ -23,7 +23,7 @@ int driveID = 0xED;  //driver ID is SEEED
 void setup()
 {
   Serial.begin(9600);
-  boxz.init(driveID);
+  boxz.initMotor(driveID);
   Serial.println("Hello! BOXZ!");
 }
 

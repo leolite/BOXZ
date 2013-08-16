@@ -11,15 +11,15 @@ boxz	KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-init	KEYWORD2
+initMotor	KEYWORD2
 initAFMotor	KEYWORD2
 goForward	KEYWORD2
 goBackward	KEYWORD2 
 goLeft	KEYWORD2 
 goRight	KEYWORD2 
 stop	KEYWORD2
-goRaw	KEYWORD2
-goRaws	KEYWORD2
+motorRaw	KEYWORD2
+motorRaws	KEYWORD2
 initServo	KEYWORD2
 servo01Up	KEYWORD2
 servo02Up	KEYWORD2
