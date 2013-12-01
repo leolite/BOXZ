@@ -1,7 +1,7 @@
 BOXZ
 ====
 
-BOXZ is is an open source robot platform as a do-it-yourself electronic pet! We connected Arduino,Plexiglass(PMMA) Origami and idea together, so we can easily and quickly build a remote pet by ourself! We can use it to playing football game, racing, fighting or some other interesting things!
+BOXZ is is an open source robot platform as do-it-yourself electronic pet! We connected Arduino, Plexiglass(PMMA), Origami and idea together, so we can easily and quickly build a remote pet by ourself! We can use it to playing football game, racing, fighting or some other interesting things!
 Have fun!
 
 Design by WWW.DIYFUN.ORG
