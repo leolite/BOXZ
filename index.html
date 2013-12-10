@@ -28,41 +28,21 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <p><img src="https://github.com/leolite/BOXZ/blob/BOXZ/BOXZ/S000_Skin/SZ_Mini_Maker_Faire_2013/overview.jpg" alt="BOXZ"></p>
+          <p><img src="https://github.com/leolite/BOXZ/blob/BOXZ/BOXZ/S000_Skin/SZ_Mini_Maker_Faire_2013/overview.jpg" alt="list"></p>
 
 <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<a name="1-what-is-boxz" class="anchor" href="#1-what-is-boxz"><span class="octicon octicon-link"></span></a>1. What is BOXZ?</h3>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
-
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<p>BOXZ is is an open source robot platform as do-it-yourself electronic pet! We connected Arduino, Plexiglass(PMMA), Origami and idea together, so we can easily and quickly build a remote pet by ourself! We can use it to playing football game, racing, fighting or some other interesting things! Have fun!</p>
 
 <h3>
-<a name="1-%E4%BB%80%E4%B9%88%E6%98%AFboxz" class="anchor" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFboxz"><span class="octicon octicon-link"></span></a>1. 什么是BOXZ？</h3>
+<a name="1-where-to-buy-boxz" class="anchor" href="#1-where-to-buy-boxz"><span class="octicon octicon-link"></span></a>1. Where to buy BOXZ?</h3>
 
-<p>BOXZ，昵称盒仔，是一款开源的互动娱乐机器人。我们将Arduino，亚克力板和纸模型创意的结合在一起，让大家可以快速搭建自己的遥控玩偶，开展互动体验。开放的模块化结构可以更好的释放您的创意，而其组装就像搭积木一样简单！BOXZ的外形和功能完全取决于您的创意。我们可以用它来搞足球比赛，角色扮演，赛车或对战，甚至拍MV！
-我们希望通过盒仔，让大家把更多的精力放在创意和互动上，让每个喜欢DIY的人都能拥有自己的个性化机器人，最最重要的是可以拿出来与大家进行互动，分享快乐，而不是静静躺在抽屉里。
-本教程将教大家如何组装BOXZ Pro，BOXZ的程序在出厂时已经固化在Arduino中，大家无须任何编程只要完成组装即可开始互动体验。如果想了解更多关于BOXZ的编程与调试，请参考调试手册。</p>
+<p>You could find the Distributors from the following links:
+1. Coming soon</p>
 
-<h3>
-<a name="2-%E9%9B%B6%E4%BB%B6%E7%9A%84%E5%AE%9A%E4%B9%89" class="anchor" href="#2-%E9%9B%B6%E4%BB%B6%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="octicon octicon-link"></span></a>2. 零件的定义？</h3>
-
-<p>BOXZ主要有四部分构成，对各个部分定义如下，每个零件都是有一个字母和三位数字构成。由亚克力板块激光切割的机械结构件统称为板块（Part），例如P001。由电机，轮子，舵机，电池盒，螺丝紧固件等统称为部件（Component），例如C001。由主控板，电机驱动板，通讯控制板等电路板统称为模块（Electronic），例如E001。由纸模型做成装饰作用的被称为皮肤（Skin），例如S001。
-DFROBOT蓝牙套件由19块板块，4个电路模块和103个部件，共计126个零件构成。</p>
-
-<h3>
-<a name="3-boxz%E7%9A%84%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F" class="anchor" href="#3-boxz%E7%9A%84%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F"><span class="octicon octicon-link"></span></a>3. BOXZ的控制方式？</h3>
-
-<p>BOXZ的控制方式可以是电脑，手机或者是红外遥控器等任何设备。这主要取决于你所使用的通讯硬件。目前我们推荐的通讯方式有蓝牙，Wifi和红外。本套件采用的是蓝牙通讯，您可以用带有蓝牙功能的Android手机，平板，或者电脑进行遥控。如果您的电脑没有蓝牙功能，可以通过外置的USB蓝牙适配器模块来实现[购买链接]</p>
-
-<h3>
-<a name="4-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%AA%E6%80%A7%E5%8C%96%E5%92%8C%E6%89%A9%E5%B1%95%E5%BA%94%E7%94%A8" class="anchor" href="#4-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E4%B8%AA%E6%80%A7%E5%8C%96%E5%92%8C%E6%89%A9%E5%B1%95%E5%BA%94%E7%94%A8"><span class="octicon octicon-link"></span></a>4. 如何实现个性化和扩展应用？</h3>
-
-<p>BOXZ由19个大小不一的板块拼接而成的一个方块，其内部的板块有很多传感器固定孔。玩家可以根据自己的需要选择不同功能的传感器，然后用Arduino编写应用程序实现各种有趣的互动功能。不仅如此，将来开会陆续推出各种功能型的板块，以配合传感器或者执行器实现各种有趣的应用。
-虽然BOXZ的框架结构只是一个方块，但正是其模块化的外形，可以借助灵活多变的纸模型实现丰富的角色扮演。从长着犄角的小动物到身穿战袍的武士，一切完全取决于玩家的创意。</p>
+<p>License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0) 
+<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">http://creativecommons.org/licenses/by-nc-sa/3.0/</a> </p>
         </section>
 
         <aside id="sidebar">
