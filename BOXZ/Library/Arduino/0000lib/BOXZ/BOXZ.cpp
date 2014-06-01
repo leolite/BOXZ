@@ -62,14 +62,14 @@ boolean BOXZ::checkIO_DF()
     check[i-startPin] = digitalRead(i);
     if(check[i-startPin] != value[i-startPin]){
       if(DEBUG ==1){
-        Serial.println("ERROR: It's not DFRobot L298 or L293 Shield"); 
+        Serial.println(F("ERROR: It's not DFRobot L298 or L293 Shield")); 
       }
       result = 0;
 	  return result;
 //      break;
     }
     if((result = 1)&&(DEBUG == 1)){
-      Serial.println("INFO: Driver board checked done! Type: DFRobot L298 or L293 Shield"); 
+      Serial.println(F("INFO: Driver board checked done! Type: DFRobot L298 or L293 Shield")); 
     }
     return result;
   }
@@ -90,14 +90,14 @@ boolean BOXZ::checkIO_ED()
     check[i-startPin] = digitalRead(i);
     if(check[i-startPin] != value[i-startPin]){
       if(DEBUG ==1){
-        Serial.println("ERROR: It's not Seeed Motor Shield V2.0"); 
+        Serial.println(F("ERROR: It's not Seeed Motor Shield V2.0")); 
       }
       result = 0;
 	  return result;
 //      break;
     }
     if((result = 1)&&(DEBUG == 1)){
-      Serial.println("INFO: Driver board checked done! Type: Seeed Motor Shield V2.0"); 
+      Serial.println(F("INFO: Driver board checked done! Type: Seeed Motor Shield V2.0")); 
     }
     return result;
   }
@@ -119,7 +119,7 @@ boolean BOXZ::checkIO_AF()
     check[i-startPin] = digitalRead(i);
     if(check[i-startPin] != value[i-startPin]){
       if(DEBUG ==1){
-        Serial.println("ERROR: It's not Adafruit Motor Shield V2.0"); 
+        Serial.println(F("ERROR: It's not Adafruit Motor Shield V2.0")); 
       }
       result = 0;
 	  return result;
@@ -127,7 +127,7 @@ boolean BOXZ::checkIO_AF()
   }
 
   if((result = 1)&&(DEBUG == 1)){
-      Serial.println("INFO: Driver board checked done! Type: Adafruit Motor Shield"); 
+      Serial.println(F("INFO: Driver board checked done! Type: Adafruit Motor Shield")); 
     }
     return result;
 }
@@ -186,7 +186,7 @@ void BOXZ::initAFMotor(){
     _pwmA = AF_PWM0A;
     _pwmB = AF_PWM0B;
     if(DEBUG ==1){
-      Serial.println("Motor Group 02");
+      Serial.println(F("Motor Group 02 actived"));
     }
   }
   //Default mode Group 1 actived M1 and M2
@@ -198,9 +198,8 @@ void BOXZ::initAFMotor(){
     _pwmA = AF_PWM2B; 
     _pwmB = AF_PWM2A;
     if(DEBUG ==1){
-      Serial.println("Motor Group 01");
+      Serial.println(F("Motor Group 01 actived"));
     }
-
   }
   _driverMode = 8;
   stop();
@@ -229,51 +228,51 @@ boolean BOXZ::initMotor(int type)
   //Keyword is DFROBOT
   if(type ==0xDF){
     //checking I/O
-    if(checkIO_DF() == 1){
+    //if(checkIO_DF() == 1){
       //Define I/O
       initMotor(DF_INA,DF_INB,DF_SPEEDA,DF_SPEEDB);
       return true;
     }
-    else{
-      if(DEBUG ==1){
-        Serial.println("ERROR:Unknown type driver board");
-      }
-      return false;
-    }
-  }
+  //else{
+  //    if(DEBUG ==1){
+  //    Serial.println(F("ERROR:Unknown type driver board"));
+  //}
+  //return false;
+  //}
+  //}
   //Keyword is SEEED
   else if(type ==0xED){
     //checking I/O
-    if(checkIO_ED() == 1){
+    //if(checkIO_ED() == 1){
       //Define I/O
       initMotor(SD_IN1,SD_IN2,SD_IN3,SD_IN4,SD_SPEEDA,SD_SPEEDB);
       return true;
     }
-    else{
-      if(DEBUG ==1){
-        Serial.println("ERROR:Unknown type driver board");
-      }
-      return false;
-    }
-  }
+  //else{
+  //    if(DEBUG ==1){
+  //    Serial.println(F("ERROR:Unknown type driver board"));
+  //}
+  //return false;
+  //}
+  //}
   //Keyword is Adafruit
   else if(type ==0xAF){
     //checking I/O
-    if(checkIO_AF() == 1){
+    //if(checkIO_AF() == 1){
       //Define I/O
       initAFMotor();
       return true;
     }
-    else{
-      if(DEBUG ==1){
-        Serial.println("ERROR:Unknown type driver board");
-      }
-      return false;
-    }
-  }
+  //else{
+  //    if(DEBUG ==1){
+  //    Serial.println(F("ERROR:Unknown type driver board"));
+  //}
+  //return false;
+  //}
+  //}
   else{
     if(DEBUG ==1){
-      Serial.println("ERROR:Unknown type driver board");
+      Serial.println(F("ERROR:Unknown type driver board"));
     }
     return false;
   }
@@ -306,11 +305,11 @@ void BOXZ::goForward()
     digitalWrite(AF_DIR_LATCH, HIGH);
     analogWrite(_pwmA,DEFAULT_SPEED);
     analogWrite(_pwmB,DEFAULT_SPEED);
-    Serial.println(_AFMstatus);
+    //Serial.println(_AFMstatus);
     if(DEBUG == 1) Serial.println("FORWARD");
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
 }
 
@@ -340,11 +339,11 @@ void BOXZ::goBackward()
     digitalWrite(AF_DIR_LATCH, HIGH);
     analogWrite(_pwmA,DEFAULT_SPEED);
     analogWrite(_pwmB,DEFAULT_SPEED);
-    Serial.println(_AFMstatus);
+    //Serial.println(_AFMstatus);
     if(DEBUG == 1) Serial.println("BACKWARD");
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
 }
 
@@ -374,11 +373,11 @@ void BOXZ::goLeft()
     digitalWrite(AF_DIR_LATCH, HIGH);
     analogWrite(_pwmA,DEFAULT_SPEED);
     analogWrite(_pwmB,DEFAULT_SPEED);
-    Serial.println(_AFMstatus);
+    //Serial.println(_AFMstatus);
     if(DEBUG == 1) Serial.println("LEFT");
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
 }
 
@@ -408,11 +407,11 @@ void BOXZ::goRight()
     digitalWrite(AF_DIR_LATCH, HIGH);
     analogWrite(_pwmA,DEFAULT_SPEED);
     analogWrite(_pwmB,DEFAULT_SPEED);
-    Serial.println(_AFMstatus);
+    //Serial.println(_AFMstatus);
     if(DEBUG == 1) Serial.println("RIGHT");
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
 }
 
@@ -462,7 +461,7 @@ void BOXZ::goForward(int speedA, int speedB)
     }
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
 }
 
@@ -510,7 +509,7 @@ void BOXZ::goBackward(int speedA, int speedB)
     }
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
 }
 
@@ -558,7 +557,7 @@ void BOXZ::goLeft(int speedA, int speedB)
     }
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
 }
 
@@ -606,7 +605,7 @@ void BOXZ::goRight(int speedA, int speedB)
     }
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
 }
 
@@ -635,7 +634,7 @@ void BOXZ::stop()
     digitalWrite(_pwmB,LOW);
   }
   else{
-    if(DEBUG == 1) Serial.println("ERROR:UNKNOWN MODE");
+    if(DEBUG == 1) Serial.println(F("ERROR:UNKNOWN MODE"));
   }	
   //	if(DEBUG == 1) Serial.println("STOP");
 }
@@ -691,7 +690,7 @@ void BOXZ::motorRaw(unsigned long data)
     analogWrite(_pwmB,_speedB);
   }
   //DEBUG MODE
-  if(DEBUG == 1) {
+  if(DEBUG == 2) {
     Serial.println("----Control byte------");
     Serial.println(_speedA,HEX);
     Serial.println(_speedB,HEX);
@@ -733,14 +732,14 @@ void BOXZ::motorRaws(String datas)
     }
 	//DEBUG MODE
     if(datain == 0&&DEBUG == 1){
-      Serial.print("ERROR: Unknown format: ");
+      Serial.print(F("ERROR: Unknown format: "));
       Serial.println(datas);
     }
 	//action
     boxz.motorRaw(datain);
   }
   else if (datasl >rawLength && DEBUG == 1){
-    Serial.print("ERROR: Unknown format: ");
+    Serial.print(F("ERROR: Unknown format: "));
     Serial.println(datas);
   }
 }
@@ -1062,14 +1061,14 @@ void BOXZ::servoRaws(String datas)
     }
 	//DEBUG MODE
     if(datain == 0&&DEBUG == 1){
-      Serial.print("ERROR: Unknown format: ");
+      Serial.print(F("ERROR: Unknown format: "));
       Serial.println(datas);
     }
 	//action
     servoRaw(datain);
   }
   else if (datasl >rawLength && DEBUG == 1){
-    Serial.print("ERROR: Unknown format: ");
+    Serial.print(F("ERROR: Unknown format: "));
     Serial.println(datas);
   }
 }
@@ -1079,13 +1078,15 @@ void BOXZ::motorCom(int keyword)
 {
    if(keyword == 'w') goForward();
    if(keyword == 's') goBackward();
-   if(keyword == 'a') goLeft();
-   if(keyword == 'd') goRight();
-   if(keyword == 'q') goForward(0xDD,0xFF); 
-   if(keyword == 'q') goForward(0xDD,0xFF); 
+   if(keyword == 'a') goLeft(0xEE,0xEE);
+   if(keyword == 'd') goRight(0xEE,0xEE);
+   if(keyword == 'q') goForward(0xEE,0xFF); 
+   if(keyword == 'e') goForward(0xFF,0xEE); 
    if(keyword == ' ') stop();
 }
 
+//SpeedA is the speed of left motor
+//SpeedB is the speed of right motor
 void BOXZ::motorCom(int keyword, int speedA, int speedB)
 {
    if(keyword == 'w') goForward(speedA,speedB);
@@ -1093,6 +1094,28 @@ void BOXZ::motorCom(int keyword, int speedA, int speedB)
    if(keyword == 'a') goLeft(speedA,speedB);
    if(keyword == 'd') goRight(speedA,speedB);
    if(keyword == ' ') stop();
+}
+
+void BOXZ::motorCom(int speedA, int speedB)
+{
+
+  if(speedA >= 0 && speedB >= 0) {
+    goForward(speedA,speedB);
+  }
+  if(speedA <= 0 && speedB <= 0) {
+    speedA = -speedA;
+    speedB = -speedB;
+    goBackward(speedA,speedB);
+  }
+  if(speedA <= 0 && speedB >= 0) {
+    speedA = -speedA;
+    goLeft(speedA,speedB);
+  }
+  if(speedA >= 0 && speedB <= 0) {
+    speedB = -speedB;
+    goRight(speedA,speedB);
+  }
+  if(speedA <= 100 && speedB <= 100) stop();
 }
 
 void BOXZ::servoCom(int keyword){
@@ -1110,10 +1133,10 @@ void BOXZ::servoCom(int keyword){
     servo02Down();
     break;
   case 'o':
-    servoRaw(0x3FFFF);
+    servoRaw(0x3FF00);
     break;
   case 'l':
-    servoRaw(0x30000);
+    servoRaw(0x300FF);
     break;
   case 'U':
     servo01Up(1);
@@ -1138,6 +1161,30 @@ void BOXZ::servoCom(int keyword){
   default :
     //Do nothing
     return;
+  }
+}
+
+//servoTar01 is the servo degree of left hand
+//servoTar02 is the servo degree of Right hand
+void BOXZ::servoCom(int servoTar01, int servoTar02){
+  //Global variable
+  _servoPosMax = SERVO_POSMAX;
+  _servoPosMin = SERVO_POSMIN;
+  _servoFrame = SERVO_FRAME;
+  //limit value from 20 to 160 degree
+  servoTar01 = min(servoTar01,_servoPosMax);
+  servoTar01 = max(servoTar01,_servoPosMin);
+  servoTar02 = min(servoTar02,_servoPosMax);
+  servoTar02 = max(servoTar02,_servoPosMin); 
+  //Calculate degree
+  _servoFra01 = int((10*(servoTar01 - _servoPos01))/_servoFrame);
+  _servoFra02 = int((10*(servoTar02 - _servoPos02))/_servoFrame);
+  for(int i = 0;i <= _servoFrame; i++){
+    _servoDis01 = 600+10*_servoPos01 + i*_servoFra01;
+    _servoDis02 = 600+10*_servoPos02 + i*_servoFra02;
+    servo01.writeMicroseconds(_servoDis01); 
+    servo02.writeMicroseconds(_servoDis02);   
+    delay(_servoDelay);  
   }
 }
 

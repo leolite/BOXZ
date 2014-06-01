@@ -15,6 +15,9 @@ Include following library
 */
 
 /*  Modified record:
+	Updata: 20131201
+	1. initMotor(0xXX) without IO checking
+	
 	Updata: 20130816
 	1. goRaw() renamed with motorRaw()
 	2. goRaws() renamed with motorRaws()
@@ -61,8 +64,8 @@ Include following library
 
 #include <Servo.h> 
 
-
-#define DEBUG			1
+//if DEBUG = 1 show info; DEBUG = 2 show RAW
+#define DEBUG			0
 #define PREACCELERATION	1  //not ready yet
 #define DEFAULT_SPEED	255
 
@@ -116,10 +119,10 @@ Include following library
  ------------------------------------------------------------------*/
 #define SERVO_PIN01			9;
 #define SERVO_PIN02			10;
-#define SERVO_POS01 		20; // middle position
-#define SERVO_POS02 		20; // middle position
-#define SERVO_POSMIN 		20; // min position is 0
-#define SERVO_POSMAX 		160; // max position is 180
+#define SERVO_POS01 		40; // middle position
+#define SERVO_POS02 		130; // middle position
+#define SERVO_POSMIN 		40; // min position is 0
+#define SERVO_POSMAX 		140; // max position is 180
 #define SERVO_DELAY 		1;  //[modifid]delay speed of hand
 #define SERVO_FRAME 		20;  //[modifid]
 
@@ -144,6 +147,7 @@ public:
 	void stop();
 	void motorCom(int keyword); //Support for BOXZ Base
 	void motorCom(int keyword, int speedA, int speedB); //Support for BOXZ Base with speed control
+	void motorCom(int speedA, int speedB); 
     void motorRaw(unsigned long data);
 	void motorRaws(String datas);
 
@@ -163,6 +167,7 @@ public:
 	void servo01Down(int type);
 	void servo02Down(int type);
 	void servoCom(int keyword); //Support for BOXZ Pro
+	void servoCom(int posL, int posR); 
 	void servoRaw(unsigned long data);
 	void servoRaws(String datas);
 	
