@@ -2,6 +2,8 @@ BOXZ
 ====
 Download link[下载请戳]: https://github.com/leolite/BOXZ/archive/BOXZ.zip
 
+Copy to "F:\xxx\arduino-1.0.x\libraries\" and unzip the package.
+
 Wiki CN: http://wiki.geek-workshop.com/doku.php?id=arduino:libraries:boxz
 
 Notice:
