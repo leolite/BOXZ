@@ -5,6 +5,7 @@ Download link[下载请戳]: https://github.com/leolite/BOXZ/archive/BOXZ.zip
 
 Notice:
 BOXZ lib is very simple, just a single character for communication. such as 'w','a','s','d'.
+
 BOXZ lib link: https://github.com/leolite/BOXZ/blob/BOXZ/BOXZ/code/BT2.0/Arduino_Lib/BOXZ.7z
 
 BOXZ APP isnot support BOXZ Lib yet, we release a new powerfull open source communication protocol with JSON format.
