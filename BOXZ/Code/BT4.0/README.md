@@ -1,6 +1,17 @@
+IOS APP link
+https://itunes.apple.com/cn/app/boxz/id783688269?mt=8
+
+1. Need to install AJSON lib to to "x:\xxx\arduino-1.0.x\libraries\" and unzip the package.
+2. Choose your hardware and download the BOXZ code in the upper folder.
+
+Download link:
+https://github.com/leolite/BOXZ/tree/BOXZ/BOXZ/code/BT4.0/Arduino_3rd_Lib/aJSON
+
+BOXZ JSON Communication Protocol
+
 /*
 Define JSON
-{"ÀàĞÍ":{"ÊôĞÔ1":²ÎÊı1, "ÊôĞÔ2":²ÎÊı2}}
+{"ç±»å‹":{"å±æ€§1":å‚æ•°1, "å±æ€§2":å‚æ•°2}}
 {"Type":{"Para1":Data1, "Para2":Data2}}
 
 Type

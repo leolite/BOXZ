@@ -2,18 +2,22 @@ BOXZ
 ====
 Download link[下载请戳]: https://github.com/leolite/BOXZ/archive/BOXZ.zip
 
-Copy to "F:\xxx\arduino-1.0.x\libraries\" and unzip the package.
-
-Wiki CN: http://wiki.geek-workshop.com/doku.php?id=arduino:libraries:boxz
 
 Notice:
 BOXZ lib is very simple, just a single character for communication. such as 'w','a','s','d'.
-IOS APP isnot support BOXZ Lib yet, because of AJSON format.
+BOXZ lib link: https://github.com/leolite/BOXZ/blob/BOXZ/BOXZ/code/BT2.0/Arduino_Lib/BOXZ.7z
+
+BOXZ APP isnot support BOXZ Lib yet, we release a new powerfull open source communication protocol with JSON format.
 
 
 
 === About BOXZ ===
-BOXZ is is an open source robot platform as do-it-yourself electronic pet! We connected Arduino, Plexiglass(PMMA), Origami and idea together, so we can easily and quickly build a remote pet by ourself! We can use it to playing football game, racing, fighting or some other interesting things!
+
+BOXZ is is an open source robot platform for DIY interactive entertainments! It combines Arduino, Origami and Robotics together, is easy to assemble, and also super fun to play with. The skin is customizable so that you can create your own charactered robot. 
+We optimize the structure and performance of BOXZ, and now release BOXZ Mini.
+
+Welcome to visit our website: www.boxz.cc
+
 
 Have fun!
 
