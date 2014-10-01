@@ -13,7 +13,7 @@ IOS APP link
 https://itunes.apple.com/cn/app/boxz/id783688269?mt=8
 
 
-[![alt text](images/BOXZ_GettingStarted.png "GettingStarted")]
+![alt text](BOXZ/Photo/BOXZ_GettingStarted.png "GettingStarted")
 
 
 === About BOXZ ===
