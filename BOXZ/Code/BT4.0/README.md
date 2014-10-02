@@ -1,11 +1,9 @@
-IOS APP link
-https://itunes.apple.com/cn/app/boxz/id783688269?mt=8
-
 1. Need to install AJSON lib to to "x:\xxx\arduino-1.0.x\libraries\" and unzip the package.
+download link: https://github.com/leolite/BOXZ/tree/BOXZ/BOXZ/code/BT4.0/Arduino_3rd_Lib/aJSON
 2. Choose your hardware and download the BOXZ code in the upper folder.
+3. Download IOS APP: https://itunes.apple.com/cn/app/boxz/id783688269?mt=8
 
-Download link:
-https://github.com/leolite/BOXZ/tree/BOXZ/BOXZ/code/BT4.0/Arduino_3rd_Lib/aJSON
+
 
 BOXZ JSON Communication Protocol
 
@@ -49,7 +47,7 @@ Go Bwd Right	{"AT":{"K1":"x"}}
 Release key	{"AT":{"K1":" "}}		
 
 3.  Action K2			
-Button A  	{"AT":{"K2":"u"}}	    
+Button A   {"AT":{"K2":"u"}}	    
 Button B   {"AT":{"K2":"i"}}
 Button C   {"AT":{"K2":"j"}}
 Button D   {"AT":{"K2":"k"}}
