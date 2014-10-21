@@ -2,6 +2,8 @@ BOXZ
 ====
 Download link[下载请戳]: https://github.com/leolite/BOXZ/archive/BOXZ.zip
 
+![alt text](BOXZ/Photo/BOXZ_Skin_CD.jpg "Skin")
+
 
 Notice:
 BOXZ lib is very simple, just a single character for communication. such as 'w','a','s','d'.
