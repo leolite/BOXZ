@@ -1,6 +1,8 @@
 BOXZ
 ====
-Download link[下载请戳]: https://github.com/leolite/BOXZ/archive/BOXZ.zip
+欢迎加入BOXZ官方QQ群[QQ Group]: 248742803  
+
+Download link[下载请戳]: https://github.com/leolite/BOXZ/archive/BOXZ.zip  
 
 ![alt text](BOXZ/Photo/BOXZ_Skin_CD.jpg "Skin")
 
