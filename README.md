@@ -1,5 +1,7 @@
 BOXZ
 ====
+盒仔已经上架了：diyfun.taobao.com  
+
 欢迎加入BOXZ官方QQ群[QQ Group]: 248742803  
 
 Download link[下载请戳]: https://github.com/leolite/BOXZ/archive/BOXZ.zip  
