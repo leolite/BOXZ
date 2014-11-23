@@ -1,129 +1,11 @@
-//Welcome to visit our website: www.boxz.cc
 
-#include <EEPROM.h>
-#include "aJSON.h"
-#include "BDrive.h"
-
-//2014.09.25
-//1. change drive function back to loop()
-//2. add serialDataDone
-
-//2014.09.22
-//1. add Me 193,194 for test mode
-//2. BUG fixed. HP, MP could be reset by CF command
-
-//2014.09.03 add by Leo
-//1. fix bug, stop() every comment
-
-//2014.08.30 add by Leo
-//watchDogLimit = 5000;
-//tested
-
-//2014.08.30 add by ogre_c
-//crash use interrupt type
-//command send only once, not loop
-
-//2013.12.01
-//tested with Limit switch!
-//Test ok without BOXZ lib
-//Fixed watchDog for ROMEO with Leonardo, not support serialEvent.
-
-
-aJsonStream serial_stream(&Serial);
-
-//Serial speed config
-//unsigned long serialSpeed = 115200; //9600 for HC
-unsigned long serialSpeed = 9600;
-
-int testmode =0; // 0: Disable; 1: testMode
-boolean serialDataDone = true; //shift bit for testmode output serial
-//hardware define
-int pinIO[]={
-  2,3,A0,A1,A2,A3,11,12}; //pin 14,15,16,17
-int pinMotor[]={
-  4,7,5,6};
-int pinServo[]={
-  9,10};
-int pinSoftSerial = 8;
-
-
-//value Data
-// - CF:Config Byte 00 - 08
-int valueME; //Message
-int valueHP; //Health para
-int valueMP; //Magic para
-int valueVB; //Visu Byte
-
-
-// - AT:Action
-int valueK1; //Button key 1 for BOXZ direction control
-int valueK2; //Button key 2 for function key A/B/C/D
-int valueV1; //motor speed left
-int valueV2; //motor speed right
-
-//for JSON
-boolean watchDogEn;
-int watchDogCountLimit = 3;
-int watchDogCount = 0;
-
-//add for connection online timer by Leo
-boolean watchDogTimerEn = false;
-static unsigned long watchDogTimer = 0;
-static unsigned long watchDogLimit = 5000;
-
-void setup()
-{
-  Serial.begin(serialSpeed);
-  initJSON();
-  initDrive();
-  //test function. APP should send {"AT":{"V1":255}} and {"AT":{"V2":255}}   2014.09.23 add by Leo
-
-  //ini..
-  valueV1 = 0xFF;
-  valueV2 = 0xFF;
-  valueHP = 0xFF;
-  valueMP = 0xFF;
-}
-
-
-void loop()
-{
-  //Serial data input(include watch dog function and JSON data input process)
-  //This block will update the data of BOXZ(such as HP/MP....)
-  serialData();
-
-  //process area start
-  //process data at serial data input finished
-  if(serialDataDone == true){
-    motorComSP(valueK1,valueV1,valueV2); //2014.09.26 updata to here. 
-  }
-
-  //process data every loop cycle
-  heartbeat();//2014.09.02 add by orge_c
-  testFunction(testmode); //2014.09.02 add by orge_c
-  //userdefined();
-
-  //value limit, fix the value out of range
-  if(valueHP<=1) valueHP = 1;
-  if(valueMP<=1) valueMP = 1;
-  if(valueHP>=255) valueHP = 255;
-  if(valueMP>=255) valueMP = 255;
-
-  //Serial data output, send JSON data out
-  commJSON();
-
-
-
-  //Reset serial data done
-  if(serialDataDone == true) serialDataDone = false; //this is the shift bit for print.
-}
 //*******************************************************************
 void initJSON()
 {
   //default value
   //futher function get data from APP
   //valueHP = 100; //2014.09.02 del by Leo
-  stop();
+  boxz.stop();
   valueK1 = 0;
   valueK2 = 0;
   watchDogEn = false;
@@ -133,7 +15,7 @@ void initJSON()
 }
 //*******************************************************************
 //deal with Serial data input, include watch dog function
-void serialData() 
+void serialDataInput() 
 {
   watchDogJSON(); 
 
@@ -165,7 +47,7 @@ void watchDogJSON()
   }
 
   if(watchDogEn == true){
-    while(Serial.read() >= 0){
+    while(Serial1.read() >= 0){
     }
     serial_stream.flush();
     watchDogCount = 0;
@@ -230,12 +112,12 @@ void ComExecution(aJsonObject *msg)
 
 //*******************************************************************
 //Output data for serial data
-void commJSON()
+void serialDataOutput()
 {
   if (valueVB > 0) {
     aJsonObject *msg = createMessage();
     aJson.print(msg, &serial_stream);
-    Serial.println(); /* Add newline. */
+    Serial1.println(); /* Add newline. */
     aJson.deleteItem(msg);
     valueME = 0; //2014.09.02 add by Leo
   }
@@ -280,63 +162,6 @@ aJsonObject *createMessage()
 
   return msg;
 }
-
-//System Function
-//*******************************************************************
-// given a PROGMEM string, use Serial.print() to send it out
-// this is needed to save precious memory
-//thanks to todbot for this http://todbot.com/blog/category/programming/
-void printProgStr(const prog_char* str) {
-  char c;
-  if (!str) {
-    return;
-  }
-  while ((c = pgm_read_byte(str))) {
-    Serial.write(c);
-    str++;
-  }
-}
-
-//Code to print out the free memory
-
-struct __freelist {
-  size_t sz;
-  struct __freelist *nx;
-};
-
-extern char * const __brkval;
-extern struct __freelist *__flp;
-
-uint16_t freeMem(uint16_t *biggest)
-{
-  char *brkval;
-  char *cp;
-  unsigned freeSpace;
-  struct __freelist *fp1, *fp2;
-
-  brkval = __brkval;
-  if (brkval == 0) {
-    brkval = __malloc_heap_start;
-  }
-  cp = __malloc_heap_end;
-  if (cp == 0) {
-    cp = ((char *)AVR_STACK_POINTER_REG) - __malloc_margin;
-  }
-  if (cp <= brkval) return 0;
-
-  freeSpace = cp - brkval;
-
-  for (*biggest = 0, fp1 = __flp, fp2 = 0;
-     fp1;
-     fp2 = fp1, fp1 = fp1->nx) {
-      if (fp1->sz > *biggest) *biggest = fp1->sz;
-    freeSpace += fp1->sz;
-  }
-
-  return freeSpace;
-}
-
-uint16_t biggest;
 
 
 //*******************************************************************
@@ -420,6 +245,7 @@ void testFunction(int _mode)//2014.09.02 add by orge_c
   //if (_mode == 2) this function running in drive function
 }
 
+//*******************************************************************
 //2014.09.02 add by orge_c
 //Message process
 void processME(int reqNo)
@@ -501,7 +327,7 @@ void processME(int reqNo)
 
 
 
-
+//*******************************************************************
 //2014.09.02 add by orge_c
 //2014.09.02 updated by Leo
 //2014.09.22 updated by Leo add testMode == 0, if not deactive this function
@@ -524,4 +350,34 @@ void heartbeat()
     }
   }
 }
+
+//*******************************************************************
+void valueCheck()
+{   
+  //value limit, fix the value out of range
+  if(valueHP<=1) valueHP = 1;
+  if(valueMP<=1) valueMP = 1;
+  if(valueHP>=255) valueHP = 255;
+  if(valueMP>=255) valueMP = 255;
+
+  //Update output VB when HP and MP value changed
+  if(valueHPtemp != valueHP){
+    bitSet(valueVB,3);
+    valueHPtemp = valueHP;
+  }
+  if(valueMPtemp != valueMP){
+    bitSet(valueVB,2);
+    valueMPtemp = valueMP;
+  }
+}
+
+
+//*******************************************************************
+//Reset serial data done
+void serialDataReset()
+{
+  if(serialDataDone == true) 
+    serialDataDone = false; //this is the shift bit for print.
+}
+
 

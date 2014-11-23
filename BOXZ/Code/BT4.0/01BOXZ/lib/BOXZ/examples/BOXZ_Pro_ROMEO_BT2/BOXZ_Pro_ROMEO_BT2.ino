@@ -12,9 +12,7 @@
 
 
 //  Hardware support list
-//  1. DFRobot L298 Shield 2A
-//  2. DFRobot L293 Shield 1A
-//  3. Adafruit Motor Drive
+//  1. DFRobot ROMEO
 
 //  Key define
 //  'w' - Go forward
@@ -36,19 +34,17 @@ int  key;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial1.begin(9600);
   boxz.initMotor();
   boxz.initServo();
-  Serial.println("Hello! BOXZ!");
+  Serial1.println("Hello! BOXZ!");
 }
 
 void loop()
 {
-  if(Serial.available() > 0) {    
-    key = Serial.read();  
+  if(Serial1.available() > 0) {    
+    key = Serial1.read();  
     boxz.servoCom(key); 
     boxz.motorCom(key); 
   }
 }
-
-

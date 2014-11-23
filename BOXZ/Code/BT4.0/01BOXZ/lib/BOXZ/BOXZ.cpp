@@ -536,10 +536,12 @@ void BOXZ::motorCom(int keyword)
 {
   if(keyword == 'w') goForward();
   if(keyword == 's') goBackward();
-  if(keyword == 'a') goLeft(0xEE,0xEE);
-  if(keyword == 'd') goRight(0xEE,0xEE);
-  if(keyword == 'q') goForward(0xEE,0xFF); 
-  if(keyword == 'e') goForward(0xFF,0xEE); 
+  if(keyword == 'a') goLeft(DEFAULT_SPEED - SPEED_FIX1, DEFAULT_SPEED - SPEED_FIX1);
+  if(keyword == 'd') goRight(DEFAULT_SPEED - SPEED_FIX1,DEFAULT_SPEED - SPEED_FIX1);
+  if(keyword == 'q') goForward(DEFAULT_SPEED, DEFAULT_SPEED - SPEED_FIX2); 
+  if(keyword == 'e') goForward(DEFAULT_SPEED - SPEED_FIX2, DEFAULT_SPEED); 
+  if(keyword == 'z') goBackward(DEFAULT_SPEED,DEFAULT_SPEED - SPEED_FIX2); 
+  if(keyword == 'x') goBackward(DEFAULT_SPEED - SPEED_FIX2,DEFAULT_SPEED); 
   if(keyword == ' ') stop();
 }
 
@@ -549,8 +551,12 @@ void BOXZ::motorCom(int keyword, int speedA, int speedB)
 {
   if(keyword == 'w') goForward(speedA,speedB);
   if(keyword == 's') goBackward(speedA,speedB);
-  if(keyword == 'a') goLeft(speedA,speedB);
-  if(keyword == 'd') goRight(speedA,speedB);
+  if(keyword == 'a') goLeft(speedA-SPEED_FIX1, speedB-SPEED_FIX1);
+  if(keyword == 'd') goRight(speedA-SPEED_FIX1,speedB-SPEED_FIX1);
+  if(keyword == 'q') goForward(speedA, speedB-SPEED_FIX2); 
+  if(keyword == 'e') goForward(speedA-SPEED_FIX2, speedB); 
+  if(keyword == 'z') goBackward(speedA,speedB-SPEED_FIX2); 
+  if(keyword == 'x') goBackward(speedA-SPEED_FIX2,speedB); 
   if(keyword == ' ') stop();
 }
 

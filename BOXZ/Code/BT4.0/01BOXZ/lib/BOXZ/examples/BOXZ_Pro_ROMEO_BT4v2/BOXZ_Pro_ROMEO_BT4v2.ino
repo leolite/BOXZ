@@ -1,19 +1,22 @@
+//  BOXZ_Pro
+//  Demo function:The application method to drive the 2x DC motor and 2x Servo
+//  Author:Leo.Zhu
+
+//  website EN: www.boxz.cc
+//  website CN: www.diyfun.org
+//  QQ Group: 248742803
+//  Download: github.com/leolite/BOXZ
+//  License: Attribution-NonCommercial-ShareAlike 3.0 Unported (CC BY-NC-SA 3.0)
+//  http://creativecommons.org/licenses/by-nc-sa/3.0/
+
+
+//  Hardware support list
+//  1. DFRobot ROMEO + BLE
+
 #include <EEPROM.h>
-#include <aJSON.h>
-#include <BOXZ.h>
+#include "aJSON.h"
+#include "BDrive.h"
 
-//2014.11.04
-//1. add BOXZ.h new lib include motor and servo support
-
-//2014.11.03
-//1. rename function name valueLimit() to valueCheck()
-//2. add if HP/MP value changed in valueCheck()
-
-//2014.11.02
-//1. rename function name serialDataInput()  and serialDataOutput()
-
-//2014.10.07
-//1. fix ini drive bug
 
 //2014.09.25
 //1. change drive function back to loop()
@@ -40,11 +43,11 @@
 //Fixed watchDog for ROMEO with Leonardo, not support serialEvent.
 
 
-aJsonStream serial_stream(&Serial);
+aJsonStream serial_stream(&Serial1);
 
 //Serial speed config
 //unsigned long serialSpeed = 115200; //9600 for HC
-unsigned long serialSpeed = 9600;
+unsigned long serial1Speed = 115200;
 
 int testmode =0; // 0: Disable; 1: testMode
 boolean serialDataDone = true; //shift bit for testmode output serial
@@ -72,10 +75,6 @@ int valueK2; //Button key 2 for function key A/B/C/D
 int valueV1; //motor speed left
 int valueV2; //motor speed right
 
-//temp Value
-int valueHPtemp; //Health para
-int valueMPtemp; //Magic para
-
 //for JSON
 boolean watchDogEn;
 int watchDogCountLimit = 3;
@@ -88,11 +87,9 @@ static unsigned long watchDogLimit = 5000;
 
 void setup()
 {
-  boxz.initMotor();
-  boxz.initServo();
-  Serial.begin(serialSpeed);
+  Serial1.begin(serial1Speed);
   initJSON();
-
+  initDrive();
   //test function. APP should send {"AT":{"V1":255}} and {"AT":{"V2":255}}   2014.09.23 add by Leo
 
   //ini..
@@ -107,13 +104,12 @@ void loop()
 {
   //Serial data input(include watch dog function and JSON data input process)
   //This block will update the data of BOXZ(such as HP/MP....)
-  serialDataInput();
+  serialData();
 
   //process area start
   //process data at serial data input finished
   if(serialDataDone == true){
-    boxz.motorCom(valueK1,valueV1,valueV2); //2014.09.26 updata to here. 
-    boxz.servoCom(valueK2);
+    motorCom(valueK1); //2014.09.26 updata to here. 
   }
 
   //process data every loop cycle
@@ -122,82 +118,26 @@ void loop()
   //userdefined();
 
   //value limit, fix the value out of range
-  valueCheck();
+  if(valueHP<=1) valueHP = 1;
+  if(valueMP<=1) valueMP = 1;
+  if(valueHP>=255) valueHP = 255;
+  if(valueMP>=255) valueMP = 255;
+
   //Serial data output, send JSON data out
-  serialDataOutput();
+  commJSON();
+
+
+
   //Reset serial data done
-  serialDataReset();
-
-
-
+  if(serialDataDone == true) serialDataDone = false; //this is the shift bit for print.
 }
-
-
-
-//System Function
-//*******************************************************************
-// given a PROGMEM string, use Serial.print() to send it out
-// this is needed to save precious memory
-//thanks to todbot for this http://todbot.com/blog/category/programming/
-void printProgStr(const prog_char* str) {
-  char c;
-  if (!str) {
-    return;
-  }
-  while ((c = pgm_read_byte(str))) {
-    Serial.write(c);
-    str++;
-  }
-}
-
-//Code to print out the free memory
-
-struct __freelist {
-  size_t sz;
-  struct __freelist *nx;
-};
-
-extern char * const __brkval;
-extern struct __freelist *__flp;
-
-uint16_t freeMem(uint16_t *biggest)
-{
-  char *brkval;
-  char *cp;
-  unsigned freeSpace;
-  struct __freelist *fp1, *fp2;
-
-  brkval = __brkval;
-  if (brkval == 0) {
-    brkval = __malloc_heap_start;
-  }
-  cp = __malloc_heap_end;
-  if (cp == 0) {
-    cp = ((char *)AVR_STACK_POINTER_REG) - __malloc_margin;
-  }
-  if (cp <= brkval) return 0;
-
-  freeSpace = cp - brkval;
-
-  for (*biggest = 0, fp1 = __flp, fp2 = 0;
-     fp1;
-     fp2 = fp1, fp1 = fp1->nx) {
-      if (fp1->sz > *biggest) *biggest = fp1->sz;
-    freeSpace += fp1->sz;
-  }
-
-  return freeSpace;
-}
-
-uint16_t biggest;
-
 //*******************************************************************
 void initJSON()
 {
   //default value
   //futher function get data from APP
   //valueHP = 100; //2014.09.02 del by Leo
-  boxz.stop();
+  stop();
   valueK1 = 0;
   valueK2 = 0;
   watchDogEn = false;
@@ -207,7 +147,7 @@ void initJSON()
 }
 //*******************************************************************
 //deal with Serial data input, include watch dog function
-void serialDataInput() 
+void serialData() 
 {
   watchDogJSON(); 
 
@@ -239,7 +179,7 @@ void watchDogJSON()
   }
 
   if(watchDogEn == true){
-    while(Serial.read() >= 0){
+    while(Serial1.read() >= 0){
     }
     serial_stream.flush();
     watchDogCount = 0;
@@ -304,12 +244,12 @@ void ComExecution(aJsonObject *msg)
 
 //*******************************************************************
 //Output data for serial data
-void serialDataOutput()
+void commJSON()
 {
   if (valueVB > 0) {
     aJsonObject *msg = createMessage();
     aJson.print(msg, &serial_stream);
-    Serial.println(); /* Add newline. */
+    Serial1.println(); /* Add newline. */
     aJson.deleteItem(msg);
     valueME = 0; //2014.09.02 add by Leo
   }
@@ -354,6 +294,63 @@ aJsonObject *createMessage()
 
   return msg;
 }
+
+//System Function
+//*******************************************************************
+// given a PROGMEM string, use Serial.print() to send it out
+// this is needed to save precious memory
+//thanks to todbot for this http://todbot.com/blog/category/programming/
+void printProgStr(const prog_char* str) {
+  char c;
+  if (!str) {
+    return;
+  }
+  while ((c = pgm_read_byte(str))) {
+    Serial.write(c);
+    str++;
+  }
+}
+
+//Code to print out the free memory
+
+struct __freelist {
+  size_t sz;
+  struct __freelist *nx;
+};
+
+extern char * const __brkval;
+extern struct __freelist *__flp;
+
+uint16_t freeMem(uint16_t *biggest)
+{
+  char *brkval;
+  char *cp;
+  unsigned freeSpace;
+  struct __freelist *fp1, *fp2;
+
+  brkval = __brkval;
+  if (brkval == 0) {
+    brkval = __malloc_heap_start;
+  }
+  cp = __malloc_heap_end;
+  if (cp == 0) {
+    cp = ((char *)AVR_STACK_POINTER_REG) - __malloc_margin;
+  }
+  if (cp <= brkval) return 0;
+
+  freeSpace = cp - brkval;
+
+  for (*biggest = 0, fp1 = __flp, fp2 = 0;
+     fp1;
+     fp2 = fp1, fp1 = fp1->nx) {
+      if (fp1->sz > *biggest) *biggest = fp1->sz;
+    freeSpace += fp1->sz;
+  }
+
+  return freeSpace;
+}
+
+uint16_t biggest;
 
 
 //*******************************************************************
@@ -437,7 +434,6 @@ void testFunction(int _mode)//2014.09.02 add by orge_c
   //if (_mode == 2) this function running in drive function
 }
 
-//*******************************************************************
 //2014.09.02 add by orge_c
 //Message process
 void processME(int reqNo)
@@ -519,7 +515,7 @@ void processME(int reqNo)
 
 
 
-//*******************************************************************
+
 //2014.09.02 add by orge_c
 //2014.09.02 updated by Leo
 //2014.09.22 updated by Leo add testMode == 0, if not deactive this function
@@ -542,36 +538,3 @@ void heartbeat()
     }
   }
 }
-
-//*******************************************************************
-void valueCheck()
-{   
-  //value limit, fix the value out of range
-  if(valueHP<=1) valueHP = 1;
-  if(valueMP<=1) valueMP = 1;
-  if(valueHP>=255) valueHP = 255;
-  if(valueMP>=255) valueMP = 255;
-
-  //Update output VB when HP and MP value changed
-  if(valueHPtemp != valueHP){
-    bitSet(valueVB,3);
-    valueHPtemp = valueHP;
-  }
-  if(valueMPtemp != valueMP){
-    bitSet(valueVB,2);
-    valueMPtemp = valueMP;
-  }
-}
-
-
-//*******************************************************************
-//Reset serial data done
-void serialDataReset()
-{
-  if(serialDataDone == true) 
-    serialDataDone = false; //this is the shift bit for print.
-}
-
-
-
-

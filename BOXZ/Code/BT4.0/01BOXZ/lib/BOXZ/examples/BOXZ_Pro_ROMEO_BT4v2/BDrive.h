@@ -87,16 +87,6 @@ void motorCom(int keyword)
   if(keyword == ' ') stop();
 }
 
-//add 2014.09.23 by Leo
-//BOXZ base keyword mode function with speed control
-void motorComSP(int _keyword, int _speedA, int _speedB)
-{
-  if(_keyword == 'w') goForward(_speedA,_speedB);
-  if(_keyword == 's') goBackward(_speedA,_speedB);
-  if(_keyword == 'a') goLeft(_speedA,_speedB);
-  if(_keyword == 'd') goRight(_speedA,_speedB);
-  if(_keyword == ' ') stop();
-}
 
 
 

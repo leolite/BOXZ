@@ -13,8 +13,11 @@ BOXZ.h - Library for general robot control.
  */
 
 /*  Modified record:
-    Update: 20141107
-    1. Rebuild for BOXZ
+  Update: 20141123
+  1. add SPEED_FIX1 amd SPEED_FIX2 for motorCom
+
+  Update: 20141107
+  1. Rebuild for BOXZ
     
  	Update: 20131201
  	1. initMotor(0xXX) without IO checking
@@ -70,6 +73,8 @@ BOXZ.h - Library for general robot control.
 #define DEBUG			0
 #define PREACCELERATION	1  //not ready yet
 #define DEFAULT_SPEED	255
+#define SPEED_FIX1 0x50  //fixed speed for turn left and right
+#define SPEED_FIX2 0x70  //fixed speed for q,e,z,x
 
 /******Pins definitions for DFROBOT L298N and A3906*************/
 //_driverMode = 4
