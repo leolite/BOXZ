@@ -76,7 +76,7 @@ BOXZ.h - Library for general robot control.
 #define SPEED_FIX1 0x50  //fixed speed for turn left and right
 #define SPEED_FIX2 0x70  //fixed speed for q,e,z,x
 
-/******Pins definitions for DFROBOT L298N and A3906*************/
+/******Pins definitions for L293, L298N and A3906*************/
 //_driverMode = 4
 //2 control pin and 2 speed pin
 #define BOXZ_INA			4
