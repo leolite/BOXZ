@@ -1,3 +1,5 @@
+Notice: This lib is for BLE, not support Bluetooth 4.0 yet.
+
 1. Need to install AJSON lib and new BOXZ lib to to "x:\xxx\arduino-1.0.x\libraries\" , then unzip the package.
 2. Open Arduino IDE and select File -> Example -> BOXZ -> BOXZ Mini
 3. select Tools -> Board Select Arduino Nano and current Serial Port.
