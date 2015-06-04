@@ -4,6 +4,9 @@ Only support Android 2.0 or any device with Bluetooth 2.0
 2. Choose your code from Arduino IDE -> File -> Examples -> BOXZ.
 3. Download and install Android APP "boxz-android-client-1.0.2.apk"(boxz-android-client-1.2.0 is not support yet)
 
+Wiki CN  
+http://wiki.geek-workshop.com/doku.php?id=arduino:libraries:boxz
+
 Download link:  
 https://github.com/leolite/BOXZ/blob/BOXZ/BOXZ/Code/BT2.0/Arduino_Lib/BOXZ.7z  
 https://github.com/leolite/BOXZ/blob/BOXZ/BOXZ/Code/BT2.0/Android/boxz-android-client-1.0.2.apk  
