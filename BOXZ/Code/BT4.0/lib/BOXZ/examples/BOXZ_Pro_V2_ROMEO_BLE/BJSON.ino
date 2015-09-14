@@ -47,7 +47,7 @@ void watchDogJSON()
   }
 
   if(watchDogEn == true){
-    while(Serial1.read() >= 0){
+    while(Serial.read() >= 0){
     }
     serial_stream.flush();
     watchDogCount = 0;
@@ -117,7 +117,7 @@ void serialDataOutput()
   if (valueVB > 0) {
     aJsonObject *msg = createMessage();
     aJson.print(msg, &serial_stream);
-    Serial1.println(); /* Add newline. */
+    Serial.println(); /* Add newline. */
     aJson.deleteItem(msg);
     valueME = 0; //2014.09.02 add by Leo
   }

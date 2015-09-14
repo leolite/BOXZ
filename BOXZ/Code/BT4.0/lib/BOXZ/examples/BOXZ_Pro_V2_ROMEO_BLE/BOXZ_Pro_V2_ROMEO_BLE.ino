@@ -1,5 +1,4 @@
-//  BOXZ_Pro
-//  Demo function:The application method to drive the 2x DC motor and 2x Servo
+//  BOXZ Pro V2 for ROMEO BLE
 //  Author:Leo.Zhu
 
 //  website EN: www.boxz.cc
@@ -11,15 +10,12 @@
 
 
 //  Hardware support list
-//  1. DFRobot ROMEO + BLE
+//  1. ROMEO BLE
 
 #include <EEPROM.h>
 #include <aJSON.h>
 #include <BOXZ.h>
 
-
-//2014.11.10
-//1. add servo support
 
 //2014.11.04
 //1. add BOXZ.h new lib include motor and servo support
@@ -60,11 +56,11 @@
 //Fixed watchDog for ROMEO with Leonardo, not support serialEvent.
 
 
-aJsonStream serial_stream(&Serial1);
+aJsonStream serial_stream(&Serial);
 
 //Serial speed config
 //unsigned long serialSpeed = 115200; //9600 for HC
-unsigned long serial1Speed = 115200;
+unsigned long serialSpeed = 115200;
 
 int testmode =0; // 0: Disable; 1: testMode
 boolean serialDataDone = true; //shift bit for testmode output serial
@@ -115,7 +111,7 @@ void setup()
 {
   boxz.initMotor();
   boxz.initServo();
-  Serial1.begin(serial1Speed);
+  Serial.begin(serialSpeed);
   initJSON();
 
   //test function. APP should send {"AT":{"V1":255}} and {"AT":{"V2":255}}   2014.09.23 add by Leo
@@ -144,7 +140,7 @@ void loop()
   //process data every loop cycle
   heartbeat();//2014.09.02 add by orge_c
   testFunction(testmode); //2014.09.02 add by orge_c
-
+  
   //userdefined();
 
   //value limit, fix the value out of range
