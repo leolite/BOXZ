@@ -23,6 +23,10 @@ Known issues:
 
 
 Modified record:
+Update: 20150922
+1. delete printProgStr() function
+2. delete <SoftwareSerial.h> function
+
 Updata: 20130816
 1. goRaw() renamed with motorRaw()
 2. goRaws() renamed with motorRaws()

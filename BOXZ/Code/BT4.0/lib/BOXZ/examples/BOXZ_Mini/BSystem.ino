@@ -1,19 +1,7 @@
 
 //System Function
 //*******************************************************************
-// given a PROGMEM string, use Serial.print() to send it out
-// this is needed to save precious memory
 //thanks to todbot for this http://todbot.com/blog/category/programming/
-void printProgStr(const prog_char* str) {
-  char c;
-  if (!str) {
-    return;
-  }
-  while ((c = pgm_read_byte(str))) {
-    Serial.write(c);
-    str++;
-  }
-}
 
 //Code to print out the free memory
 

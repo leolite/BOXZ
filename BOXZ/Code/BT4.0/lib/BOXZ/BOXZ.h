@@ -14,6 +14,9 @@ BOXZ.h - Library for general robot control.
 
 /*  Modified record:
   Update: 20141123
+  1. Resupport for Adafruit Motor Driver 74HC595
+
+  Update: 20141123
   1. add SPEED_FIX1 amd SPEED_FIX2 for motorCom
 
   Update: 20141107
@@ -67,7 +70,7 @@ BOXZ.h - Library for general robot control.
 #endif
 
 #include <Servo.h> 
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
 
 //if DEBUG = 1 show info; DEBUG = 2 show RAW
 #define DEBUG			0
@@ -85,6 +88,30 @@ BOXZ.h - Library for general robot control.
 #define BOXZ_SPEEDB		6
 
 
+/******Pins definitions for Adafruit Motor shield*************/
+//default active M1 and M2(AF_GROUP = 1); if want to choose M3 and M4, set AF_GROUP = 2
+#define AF_GROUP    1
+//_driverMode = 8
+//4 control pin and 4 speed pin, with 2 servo(PWM1A and PWM1B)
+#define AF_DIR_LATCH  12
+#define AF_DIR_CLK    4
+#define AF_DIR_EN   7
+#define AF_DIR_SER    8
+#define AF_PWM0A    6
+#define AF_PWM0B    5
+#define AF_PWM1A    9
+#define AF_PWM1B    10
+#define AF_PWM2A    11
+#define AF_PWM2B    3
+//status for Adafruit Motor Driver 74HC595 data
+#define AFM1F     32;
+#define AFM1B     16;
+#define AFM2F     64;
+#define AFM2B     8;
+#define AFM3F     128;
+#define AFM3B     2;
+#define AFM4F     1;
+#define AFM4B     4;
 
 /*------------------------------------------------------------------
  define servo
@@ -163,6 +190,7 @@ private:
   int _in2Status;
   int _in3Status;
   int _in4Status;
+  int _AFMstatus; //status for Adafruit Motor Driver 74HC595 data
   int _speedA;
   int _speedB;
 
