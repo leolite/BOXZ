@@ -13,7 +13,11 @@ BOXZ.h - Library for general robot control.
  */
 
 /*  Modified record:
-  Update: 20141123
+ Update: 20160325
+  1. Support for L9110
+  2. Support for BOXZ Mini V2
+
+  Update: 20151123
   1. Resupport for Adafruit Motor Driver 74HC595
 
   Update: 20141123
@@ -79,6 +83,11 @@ BOXZ.h - Library for general robot control.
 #define SPEED_FIX1 0x50  //fixed speed for turn left and right
 #define SPEED_FIX2 0x70  //fixed speed for q,e,z,x
 
+/******Pins definitions for L9110*************/
+//_driverMode = 2
+//1 control pin and 1 speed pin
+
+
 /******Pins definitions for L293, L298N and A3906*************/
 //_driverMode = 4
 //2 control pin and 2 speed pin
@@ -134,6 +143,8 @@ public:
   //motor control
   boolean initMotor();  //Automatic check board
   boolean initMotor(int type);
+  void initMotor(int inA, int pwmA);
+  void initMotor(int inA, int pwmA, int inCHx);
   void initMotor(int inA, int inB, int pwmA, int pwmB);
   void initMotor(int in1, int in2, int in3, int in4, int pwmA, int pwmB);
   void initAFMotor(); //initialization for Adafruit Motor Driver
@@ -178,13 +189,18 @@ private:
   //Pin define
   int _inA;
   int _inB;
+  int _inC;
+  int _inD;
   int _in1; 
   int _in2; 
   int _in3; 
   int _in4; 
   int _pwmA; 
   int _pwmB;
+  int _pwmC;
+  int _pwmD;
   int _driverMode;
+  int _inCHx;
   //Output value
   int _in1Status;
   int _in2Status;
