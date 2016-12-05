@@ -13,6 +13,10 @@ BOXZ.h - Library for general robot control.
  */
 
 /*  Modified record:
+ Update: 20161121
+  1. para support L9110 and DRV8833
+  2. add baby mode
+
  Update: 20160325
   1. Support for L9110
   2. Support for BOXZ Mini V2
@@ -79,7 +83,7 @@ BOXZ.h - Library for general robot control.
 //if DEBUG = 1 show info; DEBUG = 2 show RAW
 #define DEBUG			0
 #define PREACCELERATION	1  //not ready yet
-#define DEFAULT_SPEED	255
+#define DEFAULT_SPEED	200 //MAX 255
 #define SPEED_FIX1 0x50  //fixed speed for turn left and right
 #define SPEED_FIX2 0x70  //fixed speed for q,e,z,x
 
@@ -95,7 +99,6 @@ BOXZ.h - Library for general robot control.
 #define BOXZ_INB			7
 #define BOXZ_SPEEDA		5
 #define BOXZ_SPEEDB		6
-
 
 /******Pins definitions for Adafruit Motor shield*************/
 //default active M1 and M2(AF_GROUP = 1); if want to choose M3 and M4, set AF_GROUP = 2
@@ -129,10 +132,10 @@ BOXZ.h - Library for general robot control.
  ------------------------------------------------------------------*/
 #define SERVO_PIN01			9;
 #define SERVO_PIN02			10;
-#define SERVO_POS01 		40; // middle position
-#define SERVO_POS02 		130; // middle position
-#define SERVO_POSMIN 		40; // min position is 0
-#define SERVO_POSMAX 		140; // max position is 180
+#define SERVO_POS01 		90; // middle position
+#define SERVO_POS02 		90; // middle position
+#define SERVO_POSMIN 		0; // min position is 0
+#define SERVO_POSMAX 		180; // max position is 180
 #define SERVO_DELAY 		1;  //[modifid]delay speed of hand
 #define SERVO_FRAME 		20;  //[modifid]
 
@@ -141,10 +144,10 @@ class BOXZ
 {
 public:
   //motor control
-  boolean initMotor();  //Automatic check board
-  boolean initMotor(int type);
-  void initMotor(int inA, int pwmA);
-  void initMotor(int inA, int pwmA, int inCHx);
+  boolean initMotor();  //Default 4 Pin drive for L293 - 20161115
+  boolean initMotorType(int type); //20161115, this function is used for DRV8833(2), also L9110(1)
+  void initMotor(int inx, int pwmx); //L9110 or other one chanel drive
+  void initMotor(int inx, int pwmx, int inCHx); //L9110 or other one chanel drive
   void initMotor(int inA, int inB, int pwmA, int pwmB);
   void initMotor(int in1, int in2, int in3, int in4, int pwmA, int pwmB);
   void initAFMotor(); //initialization for Adafruit Motor Driver
@@ -157,6 +160,7 @@ public:
   void goLeft();
   void goRight();
   void stop();
+  void brake(); //add 20161118
   void motorCom(int keyword); //Support for BOXZ Base
   void motorCom(int keyword, int speedA, int speedB); //Support for BOXZ Base with speed control
   void motorCom(int speedA, int speedB); 
@@ -209,6 +213,11 @@ private:
   int _AFMstatus; //status for Adafruit Motor Driver 74HC595 data
   int _speedA;
   int _speedB;
+
+  //20161118 add by Leo
+  boolean _driveParaSD; //0 = Default; 1 = DRV8833 SlowDecay(reverse speed)
+  boolean _driveParaNB; //0 = Default; 1 = L9110 Not both output are HIGH
+  boolean _driveParaBB; //0 = Default; 1 = Baby with 4 direction
 
   //servo
   int _servoPosMax;

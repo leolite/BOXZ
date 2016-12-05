@@ -46,36 +46,38 @@ BOXZ.h - Library for general robot control.
 /******************************* initialization function ************************************************/
 
 //initialization
-void BOXZ::initMotor(int inA, int pwmA)
+void BOXZ::initMotor(int inx, int pwmx)
 {
-  pinMode(inA,OUTPUT);
-  pinMode(pwmA,OUTPUT);
-  _inA = inA;
-  _pwmA = pwmA;
+  pinMode(inx,OUTPUT);
+  pinMode(pwmx,OUTPUT);
+  _inA = inx;
+  _pwmA = pwmx;
 
   _driverMode = 2;
+  _driveParaSD = 0;
+  _driveParaNB = 1;
   stop();
 }
 
-void BOXZ::initMotor(int inA, int pwmA, int inCHx)
+void BOXZ::initMotor(int inx, int pwmx, int inCHx)
 {
-  pinMode(inA,OUTPUT);
-  pinMode(pwmA,OUTPUT);
+  pinMode(inx,OUTPUT);
+  pinMode(pwmx,OUTPUT);
   if(inCHx == 1){
-    _inA = inA;
-    _pwmA = pwmA;
+    _inA = inx;
+    _pwmA = pwmx;
   }
   else if(inCHx == 2){
-    _inB = inA;
-    _pwmB = pwmA;
+    _inB = inx;
+    _pwmB = pwmx;
   }
   else if(inCHx == 3){
-    _inC = inA;
-    _pwmC = pwmA;
+    _inC = inx;
+    _pwmC = pwmx;
   }
   else if(inCHx == 4){
-    _inD = inA;
-    _pwmD = pwmA;
+    _inD = inx;
+    _pwmD = pwmx;
   }
   else{
     //error
@@ -90,6 +92,8 @@ void BOXZ::initMotor(int inA, int pwmA, int inCHx)
   }
 
   _driverMode = 2;
+  _driveParaSD = 0;
+  _driveParaNB = 1;
   _inCHx = inCHx;
   stop();
 }
@@ -107,6 +111,8 @@ void BOXZ::initMotor(int inA, int inB, int pwmA, int pwmB)
   _pwmA = pwmA;
   _pwmB = pwmB;
   _driverMode = 4;
+  _driveParaSD = 0;
+  _driveParaNB = 0;
   stop();
 }
 
@@ -171,29 +177,67 @@ boolean BOXZ::initMotor()
   initMotor(BOXZ_INA,BOXZ_INB,BOXZ_SPEEDA,BOXZ_SPEEDB);
 }
 
+//TYPE 0 = standard; 1/11 = L9110; 2/12 = DRV8833
+boolean BOXZ::initMotorType(int type){
+  if(type == 1){
+    _driveParaSD = 0;
+    _driveParaNB = 1;
+    _driveParaBB = 0;
+  }
+  else if(type == 2){
+    _driveParaSD = 1;
+    _driveParaNB = 0;
+    _driveParaBB = 0;
+  }
+  else if(type == 11){
+    _driveParaSD = 0;
+    _driveParaNB = 1;
+    _driveParaBB = 1;
+  }
+  else if(type == 12){
+    _driveParaSD = 1;
+    _driveParaNB = 0;
+    _driveParaBB = 1;
+  }
+  else
+  {
+    _driveParaSD = 0;
+    _driveParaNB = 0;
+    _driveParaBB = 0;
+  }
+}
 
 /****************************direction of motion control function*********************************/
 //Control BOXZ go forward
 void BOXZ::goForward()
 {
+  //_driveParaNB = 1;
   if(_driverMode == 2){
-    digitalWrite(_inA,HIGH);
-    digitalWrite(_inB,HIGH);
-    digitalWrite(_pwmA,LOW);
-    digitalWrite(_pwmB,LOW);
+    digitalWrite(_inA,LOW);
+    digitalWrite(_inB,LOW);
+    digitalWrite(_pwmA,DEFAULT_SPEED);
+    digitalWrite(_pwmB,DEFAULT_SPEED);
     if(_inCHx>2){
-      digitalWrite(_inC,HIGH);
-      digitalWrite(_inD,HIGH);
-      digitalWrite(_pwmC,LOW);
-      digitalWrite(_pwmD,LOW);
+      digitalWrite(_inC,LOW);
+      digitalWrite(_inD,LOW);
+      digitalWrite(_pwmC,DEFAULT_SPEED);
+      digitalWrite(_pwmD,DEFAULT_SPEED);
     }
     //if(DEBUG == 1) Serial.println("FORWARD");
   }
   else if(_driverMode == 4){
-    digitalWrite(_inA,HIGH);
-    digitalWrite(_inB,HIGH);
-    analogWrite(_pwmA,DEFAULT_SPEED);
-    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(_driveParaSD == 1){
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,255-DEFAULT_SPEED);
+      analogWrite(_pwmB,255-DEFAULT_SPEED);
+    }
+    else{
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,DEFAULT_SPEED);
+      analogWrite(_pwmB,DEFAULT_SPEED);
+    }
     //if(DEBUG == 1) Serial.println("FORWARD");
   }
   else if(_driverMode == 6){
@@ -223,16 +267,17 @@ void BOXZ::goForward()
 //Control BOXZ go backward
 void BOXZ::goBackward()
 {
+  //_driveParaNB = 1;
   if(_driverMode == 2){
-    digitalWrite(_inA,LOW);
-    digitalWrite(_inB,LOW);
-    digitalWrite(_pwmA,HIGH);
-    digitalWrite(_pwmB,HIGH);
+    digitalWrite(_inA,HIGH);
+    digitalWrite(_inB,HIGH);
+    digitalWrite(_pwmA,LOW);
+    digitalWrite(_pwmB,LOW);
     if(_inCHx>2){
-      digitalWrite(_inC,LOW);
-      digitalWrite(_inD,LOW);
-      digitalWrite(_pwmC,HIGH);
-      digitalWrite(_pwmD,HIGH);
+      digitalWrite(_inC,HIGH);
+      digitalWrite(_inD,HIGH);
+      digitalWrite(_pwmC,LOW);
+      digitalWrite(_pwmD,LOW);
     }
     //if(DEBUG == 1) Serial.println("BACKWARD");
   }
@@ -270,24 +315,33 @@ void BOXZ::goBackward()
 //Control BOXZ turn left
 void BOXZ::goLeft()
 {
+  //_driveParaNB = 1;
   if(_driverMode == 2){
-    digitalWrite(_inA,HIGH);
+    digitalWrite(_inA,LOW);
     digitalWrite(_inB,LOW);
-    digitalWrite(_pwmA,LOW);
-    digitalWrite(_pwmB,HIGH);
+    digitalWrite(_pwmA,DEFAULT_SPEED);
+    digitalWrite(_pwmB,LOW);
     if(_inCHx>2){
-      digitalWrite(_inC,HIGH);
+      digitalWrite(_inC,LOW);
       digitalWrite(_inD,LOW);
-      digitalWrite(_pwmC,LOW);
-      digitalWrite(_pwmD,HIGH);
+      digitalWrite(_pwmC,DEFAULT_SPEED);
+      digitalWrite(_pwmD,LOW);
     }
     //if(DEBUG == 1) Serial.println("LEFT");
   }
   else if(_driverMode == 4){
-    digitalWrite(_inA,HIGH);
-    digitalWrite(_inB,LOW);
-    analogWrite(_pwmA,DEFAULT_SPEED);
-    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(_driveParaSD == 1){
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,LOW);
+      analogWrite(_pwmA,255-DEFAULT_SPEED);
+      analogWrite(_pwmB,DEFAULT_SPEED);
+    }
+    else{
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,LOW);
+      analogWrite(_pwmA,DEFAULT_SPEED);
+      analogWrite(_pwmB,DEFAULT_SPEED);
+    }
     //if(DEBUG == 1) Serial.println("LEFT");
   }
   else if(_driverMode == 6){
@@ -317,24 +371,33 @@ void BOXZ::goLeft()
 //Control BOXZ turn right
 void BOXZ::goRight()
 {
+  //_driveParaNB = 1;
   if(_driverMode == 2){
     digitalWrite(_inA,LOW);
-    digitalWrite(_inB,HIGH);
-    digitalWrite(_pwmA,HIGH);
-    digitalWrite(_pwmB,LOW);
+    digitalWrite(_inB,LOW);
+    digitalWrite(_pwmA,LOW);
+    digitalWrite(_pwmB,DEFAULT_SPEED);
     if(_inCHx>2){
       digitalWrite(_inC,LOW);
-      digitalWrite(_inD,HIGH);
-      digitalWrite(_pwmC,HIGH);
-      digitalWrite(_pwmD,LOW);
+      digitalWrite(_inD,LOW);
+      digitalWrite(_pwmC,LOW);
+      digitalWrite(_pwmD,DEFAULT_SPEED);
     }
     //if(DEBUG == 1) Serial.println("LEFT");
   }
   else if(_driverMode == 4){
-    digitalWrite(_inA,LOW);
-    digitalWrite(_inB,HIGH);
-    analogWrite(_pwmA,DEFAULT_SPEED);
-    analogWrite(_pwmB,DEFAULT_SPEED);
+    if(_driveParaSD == 1){
+      digitalWrite(_inA,LOW);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,DEFAULT_SPEED);
+      analogWrite(_pwmB,255-DEFAULT_SPEED);
+    }
+    else{
+      digitalWrite(_inA,LOW);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,DEFAULT_SPEED);
+      analogWrite(_pwmB,DEFAULT_SPEED);
+    }
     //if(DEBUG == 1) Serial.println("LEFT");
   }
   else if(_driverMode == 6){
@@ -366,11 +429,33 @@ void BOXZ::goRight()
 //Control BOXZ go forward with speed control
 void BOXZ::goForward(int speedA, int speedB)
 {
-  if(_driverMode == 4){
-    digitalWrite(_inA,HIGH);
-    digitalWrite(_inB,HIGH);
+  //_driveParaNB = 1;
+  if(_driverMode == 2){
+    digitalWrite(_inA,LOW);
+    digitalWrite(_inB,LOW);
     analogWrite(_pwmA,speedA);
     analogWrite(_pwmB,speedB);
+    if(_inCHx>2){
+      digitalWrite(_inC,LOW);
+      digitalWrite(_inD,LOW);
+      analogWrite(_pwmC,speedA);
+      analogWrite(_pwmD,speedB);
+    }
+    //if(DEBUG == 1) Serial.println("FORWARD");
+  }
+  else if(_driverMode == 4){
+    if(_driveParaSD == 1){
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,255-speedA);
+      analogWrite(_pwmB,255-speedB);
+    }
+    else{
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,speedA);
+      analogWrite(_pwmB,speedB);
+    }
   }
   else if(_driverMode == 6){
     digitalWrite(_in1,HIGH);
@@ -396,7 +481,22 @@ void BOXZ::goForward(int speedA, int speedB)
 //Control BOXZ go backward with speed control
 void BOXZ::goBackward(int speedA, int speedB)
 {
-  if(_driverMode == 4){
+  //_driveParaNB = 1;
+  //not support speed control
+  if(_driverMode == 2){
+    digitalWrite(_inA,HIGH);
+    digitalWrite(_inB,HIGH);
+    digitalWrite(_pwmA,LOW);
+    digitalWrite(_pwmB,LOW);
+    if(_inCHx>2){
+      digitalWrite(_inC,HIGH);
+      digitalWrite(_inD,HIGH);
+      digitalWrite(_pwmC,LOW);
+      digitalWrite(_pwmD,LOW);
+    }
+    //if(DEBUG == 1) Serial.println("BACKWARD");
+  }
+  else if(_driverMode == 4){
     digitalWrite(_inA,LOW);
     digitalWrite(_inB,LOW);
     analogWrite(_pwmA,speedA);
@@ -426,11 +526,33 @@ void BOXZ::goBackward(int speedA, int speedB)
 //Control BOXZ turn left with speed control
 void BOXZ::goLeft(int speedA, int speedB)
 {
-  if(_driverMode == 4){
-    digitalWrite(_inA,HIGH);
+  //_driveParaNB = 1;
+  if(_driverMode == 2){
+    digitalWrite(_inA,LOW);
     digitalWrite(_inB,LOW);
     analogWrite(_pwmA,speedA);
-    analogWrite(_pwmB,speedB);
+    digitalWrite(_pwmB,LOW);
+    if(_inCHx>2){
+      digitalWrite(_inC,LOW);
+      digitalWrite(_inD,LOW);
+      analogWrite(_pwmC,speedA);
+      digitalWrite(_pwmD,LOW);
+    }
+    //if(DEBUG == 1) Serial.println("LEFT");
+  }
+  else if(_driverMode == 4){
+    if(_driveParaSD == 1){
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,LOW);
+      analogWrite(_pwmA,255-speedA);
+      analogWrite(_pwmB,speedB);
+    }
+    else{
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,LOW);
+      analogWrite(_pwmA,speedA);
+      analogWrite(_pwmB,speedB);
+    }
   }
   else if(_driverMode == 6){
     digitalWrite(_in1,HIGH);
@@ -456,11 +578,33 @@ void BOXZ::goLeft(int speedA, int speedB)
 //Control BOXZ turn right with speed control
 void BOXZ::goRight(int speedA, int speedB)
 {
-  if(_driverMode == 4){
+  //_driveParaNB = 1;
+  if(_driverMode == 2){
     digitalWrite(_inA,LOW);
-    digitalWrite(_inB,HIGH);
-    analogWrite(_pwmA,speedA);
+    digitalWrite(_inB,LOW);
+    digitalWrite(_pwmA,LOW);
     analogWrite(_pwmB,speedB);
+    if(_inCHx>2){
+      digitalWrite(_inC,LOW);
+      digitalWrite(_inD,LOW);
+      digitalWrite(_pwmC,LOW);
+      analogWrite(_pwmD,speedB);
+    }
+    //if(DEBUG == 1) Serial.println("LEFT");
+  }
+  else if(_driverMode == 4){
+    if(_driveParaSD == 1){
+      digitalWrite(_inA,LOW);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,speedA);
+      analogWrite(_pwmB,255-speedB);
+    }
+    else{
+      digitalWrite(_inA,LOW);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,speedA);
+      analogWrite(_pwmB,speedB);
+    }
   }
   else if(_driverMode == 6){
     digitalWrite(_in1,LOW);
@@ -914,6 +1058,17 @@ void BOXZ::motorCom(int keyword)
 //SpeedB is the speed of right motor
 void BOXZ::motorCom(int keyword, int speedA, int speedB)
 {
+  if(_driveParaBB == 1){
+  if(keyword == 'w') goForward(speedA,speedB);
+  if(keyword == 's') goBackward(speedA,speedB);
+  if(keyword == 'a') goLeft(speedA-SPEED_FIX1, speedB-SPEED_FIX1);
+  if(keyword == 'd') goRight(speedA-SPEED_FIX1,speedB-SPEED_FIX1);
+  if(keyword == 'q') goForward(speedA,speedB);
+  if(keyword == 'e') goForward(speedA,speedB);
+  if(keyword == 'z') goLeft(speedA-SPEED_FIX1, speedB-SPEED_FIX1);
+  if(keyword == 'x') goRight(speedA-SPEED_FIX1,speedB-SPEED_FIX1);
+  if(keyword == ' ') stop();
+}else{
   if(keyword == 'w') goForward(speedA,speedB);
   if(keyword == 's') goBackward(speedA,speedB);
   if(keyword == 'a') goLeft(speedA-SPEED_FIX1, speedB-SPEED_FIX1);
@@ -923,6 +1078,7 @@ void BOXZ::motorCom(int keyword, int speedA, int speedB)
   if(keyword == 'z') goBackward(speedA,speedB-SPEED_FIX2); 
   if(keyword == 'x') goBackward(speedA-SPEED_FIX2,speedB); 
   if(keyword == ' ') stop();
+}
 }
 
 void BOXZ::motorCom(int speedA, int speedB)
@@ -1018,5 +1174,6 @@ void BOXZ::servoCom(int servoTar01, int servoTar02){
 }
 
 BOXZ boxz;
+
 
 
