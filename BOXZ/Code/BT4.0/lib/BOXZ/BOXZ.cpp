@@ -172,40 +172,61 @@ void BOXZ::initAFMotor(){
 }
 
 //init
-boolean BOXZ::initMotor()
+void  BOXZ::initMotor()
 {
   initMotor(BOXZ_INA,BOXZ_INB,BOXZ_SPEEDA,BOXZ_SPEEDB);
 }
 
-//TYPE 0 = standard; 1/11 = L9110; 2/12 = DRV8833
-boolean BOXZ::initMotorType(int type){
+//Version 2 = BOXZ L9110 Red board; 3 = OCROBOT
+void BOXZ::initMotor(int ver)
+{
+  //BOXZ V2 L9110 red board
+  if(ver == 2){
+    initMotor(2,3,1);
+    initMotor(4,5,2);
+    //initMotor(7,6,3);
+    //initMotor(8,9,4);
+    initMotorType(1); 
+  }
+  //OCROBOT DRV8833
+  else if(ver == 3){
+    initMotor(BOXZ_INA,BOXZ_INB,BOXZ_SPEEDA,BOXZ_SPEEDB);
+    initMotorType(2); 
+  }
+  else if(ver == 4){
+     //initMotor(2,3,1);
+    initMotor(4,5,2);
+    initMotor(7,6,3);
+    //initMotor(8,9,4);
+    initMotorType(1); 
+  }
+  else{
+    initMotor(BOXZ_INA,BOXZ_INB,BOXZ_SPEEDA,BOXZ_SPEEDB);
+
+  }
+}
+
+
+//TYPE 0 = standard; 1 = L9110; 2 = DRV8833
+void BOXZ::initMotorType(int type){
   if(type == 1){
     _driveParaSD = 0;
     _driveParaNB = 1;
-    _driveParaBB = 0;
+    //_driveParaBB = 0;
   }
   else if(type == 2){
     _driveParaSD = 1;
     _driveParaNB = 0;
-    _driveParaBB = 0;
-  }
-  else if(type == 11){
-    _driveParaSD = 0;
-    _driveParaNB = 1;
-    _driveParaBB = 1;
-  }
-  else if(type == 12){
-    _driveParaSD = 1;
-    _driveParaNB = 0;
-    _driveParaBB = 1;
+    //_driveParaBB = 0;
   }
   else
   {
     _driveParaSD = 0;
     _driveParaNB = 0;
-    _driveParaBB = 0;
+    //_driveParaBB = 0;
   }
 }
+
 
 /****************************direction of motion control function*********************************/
 //Control BOXZ go forward
@@ -318,12 +339,12 @@ void BOXZ::goLeft()
   //_driveParaNB = 1;
   if(_driverMode == 2){
     digitalWrite(_inA,LOW);
-    digitalWrite(_inB,LOW);
+    digitalWrite(_inB,HIGH); //20170701
     digitalWrite(_pwmA,DEFAULT_SPEED);
     digitalWrite(_pwmB,LOW);
     if(_inCHx>2){
       digitalWrite(_inC,LOW);
-      digitalWrite(_inD,LOW);
+      digitalWrite(_inD,HIGH); //20170701
       digitalWrite(_pwmC,DEFAULT_SPEED);
       digitalWrite(_pwmD,LOW);
     }
@@ -331,10 +352,10 @@ void BOXZ::goLeft()
   }
   else if(_driverMode == 4){
     if(_driveParaSD == 1){
-      digitalWrite(_inA,HIGH);
-      digitalWrite(_inB,LOW);
-      analogWrite(_pwmA,255-DEFAULT_SPEED);
-      analogWrite(_pwmB,DEFAULT_SPEED);
+      digitalWrite(_inA,LOW);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,DEFAULT_SPEED);
+      analogWrite(_pwmB,255-DEFAULT_SPEED);
     }
     else{
       digitalWrite(_inA,HIGH);
@@ -373,12 +394,12 @@ void BOXZ::goRight()
 {
   //_driveParaNB = 1;
   if(_driverMode == 2){
-    digitalWrite(_inA,LOW);
+    digitalWrite(_inA,HIGH); //20170701
     digitalWrite(_inB,LOW);
     digitalWrite(_pwmA,LOW);
     digitalWrite(_pwmB,DEFAULT_SPEED);
     if(_inCHx>2){
-      digitalWrite(_inC,LOW);
+      digitalWrite(_inC,HIGH); //20170701
       digitalWrite(_inD,LOW);
       digitalWrite(_pwmC,LOW);
       digitalWrite(_pwmD,DEFAULT_SPEED);
@@ -387,10 +408,10 @@ void BOXZ::goRight()
   }
   else if(_driverMode == 4){
     if(_driveParaSD == 1){
-      digitalWrite(_inA,LOW);
-      digitalWrite(_inB,HIGH);
-      analogWrite(_pwmA,DEFAULT_SPEED);
-      analogWrite(_pwmB,255-DEFAULT_SPEED);
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,LOW);
+      analogWrite(_pwmA,255-DEFAULT_SPEED);
+      analogWrite(_pwmB,DEFAULT_SPEED);
     }
     else{
       digitalWrite(_inA,LOW);
@@ -529,12 +550,12 @@ void BOXZ::goLeft(int speedA, int speedB)
   //_driveParaNB = 1;
   if(_driverMode == 2){
     digitalWrite(_inA,LOW);
-    digitalWrite(_inB,LOW);
+    digitalWrite(_inB,HIGH); //20170701
     analogWrite(_pwmA,speedA);
     digitalWrite(_pwmB,LOW);
     if(_inCHx>2){
       digitalWrite(_inC,LOW);
-      digitalWrite(_inD,LOW);
+      digitalWrite(_inD,HIGH); //20170701
       analogWrite(_pwmC,speedA);
       digitalWrite(_pwmD,LOW);
     }
@@ -542,10 +563,10 @@ void BOXZ::goLeft(int speedA, int speedB)
   }
   else if(_driverMode == 4){
     if(_driveParaSD == 1){
-      digitalWrite(_inA,HIGH);
-      digitalWrite(_inB,LOW);
-      analogWrite(_pwmA,255-speedA);
-      analogWrite(_pwmB,speedB);
+      digitalWrite(_inA,LOW);
+      digitalWrite(_inB,HIGH);
+      analogWrite(_pwmA,speedB);
+      analogWrite(_pwmB,255-speedA);
     }
     else{
       digitalWrite(_inA,HIGH);
@@ -580,12 +601,12 @@ void BOXZ::goRight(int speedA, int speedB)
 {
   //_driveParaNB = 1;
   if(_driverMode == 2){
-    digitalWrite(_inA,LOW);
+    digitalWrite(_inA,HIGH); //20170701
     digitalWrite(_inB,LOW);
     digitalWrite(_pwmA,LOW);
     analogWrite(_pwmB,speedB);
     if(_inCHx>2){
-      digitalWrite(_inC,LOW);
+      digitalWrite(_inC,HIGH); //20170701
       digitalWrite(_inD,LOW);
       digitalWrite(_pwmC,LOW);
       analogWrite(_pwmD,speedB);
@@ -594,10 +615,10 @@ void BOXZ::goRight(int speedA, int speedB)
   }
   else if(_driverMode == 4){
     if(_driveParaSD == 1){
-      digitalWrite(_inA,LOW);
-      digitalWrite(_inB,HIGH);
-      analogWrite(_pwmA,speedA);
-      analogWrite(_pwmB,255-speedB);
+      digitalWrite(_inA,HIGH);
+      digitalWrite(_inB,LOW);
+      analogWrite(_pwmA,255-speedB);
+      analogWrite(_pwmB,speedA);
     }
     else{
       digitalWrite(_inA,LOW);
@@ -645,6 +666,8 @@ void BOXZ::stop()
   }
   else if(_driverMode == 4){
     /*disable the enble pin, to stop the motor. */
+    digitalWrite(_inA,LOW);
+    digitalWrite(_inB,LOW);
     digitalWrite(_pwmA,LOW);
     digitalWrite(_pwmB,LOW);
   }
@@ -1043,42 +1066,56 @@ void BOXZ::servoRaws(String datas)
 //BOXZ base keyword mode function
 void BOXZ::motorCom(int keyword)
 {
-  if(keyword == 'w') goForward();
-  if(keyword == 's') goBackward();
-  if(keyword == 'a') goLeft();
-  if(keyword == 'd') goRight();
-  if(keyword == 'q') goForward(); 
-  if(keyword == 'e') goForward(); 
-  if(keyword == 'z') goBackward(); 
-  if(keyword == 'x') goBackward(); 
-  if(keyword == ' ') stop();
+	
+  if(keyword == 'w' || keyword == 'A') goForward();
+  if(keyword == 's' || keyword == 'B') goBackward();
+  if(keyword == 'a' || keyword == 'C') goLeft();
+  if(keyword == 'd' || keyword == 'D') goRight();
+  
+  if(keyword == 'q' || keyword == 'F') {
+	  if(_driveParaSD == 1){
+		  goForward(0,DEFAULT_SPEED); 
+	  }else{
+		  goForward(DEFAULT_SPEED,0); 
+	  }
+  }
+  if(keyword == 'e' || keyword == 'N') {
+	  if(_driveParaSD == 1){
+		  goForward(DEFAULT_SPEED,0); 
+	  }else{
+		  goForward(0,DEFAULT_SPEED); 
+	  }
+  }
+  if(keyword == 'z') goBackward(0,DEFAULT_SPEED); 
+  if(keyword == 'x') goBackward(DEFAULT_SPEED,0); 
+  if(keyword == ' ' || keyword == 'K' || keyword == 'L' || keyword == 'I' || keyword == 'J') stop();
 }
 
 //SpeedA is the speed of left motor
 //SpeedB is the speed of right motor
 void BOXZ::motorCom(int keyword, int speedA, int speedB)
 {
-  if(_driveParaBB == 1){
   if(keyword == 'w') goForward(speedA,speedB);
   if(keyword == 's') goBackward(speedA,speedB);
-  if(keyword == 'a') goLeft(speedA-SPEED_FIX1, speedB-SPEED_FIX1);
-  if(keyword == 'd') goRight(speedA-SPEED_FIX1,speedB-SPEED_FIX1);
-  if(keyword == 'q') goForward(speedA,speedB);
-  if(keyword == 'e') goForward(speedA,speedB);
-  if(keyword == 'z') goLeft(speedA-SPEED_FIX1, speedB-SPEED_FIX1);
-  if(keyword == 'x') goRight(speedA-SPEED_FIX1,speedB-SPEED_FIX1);
+  if(keyword == 'a') goLeft(speedA, speedB);
+  if(keyword == 'd') goRight(speedA,speedB);
+  if(keyword == 'q') {
+	  if(_driveParaSD == 1){
+		  goForward(0,speedA); 
+	  }else{
+		  goForward(speedA,0); 
+	  }
+  }
+  if(keyword == 'e') {
+	  if(_driveParaSD == 1){
+		  goForward(speedB,0); 
+	  }else{
+		  goForward(0,speedB);
+	  }
+  }
+  if(keyword == 'z') goBackward(0,speedB);
+  if(keyword == 'x') goBackward(speedA,0);
   if(keyword == ' ') stop();
-}else{
-  if(keyword == 'w') goForward(speedA,speedB);
-  if(keyword == 's') goBackward(speedA,speedB);
-  if(keyword == 'a') goLeft(speedA-SPEED_FIX1, speedB-SPEED_FIX1);
-  if(keyword == 'd') goRight(speedA-SPEED_FIX1,speedB-SPEED_FIX1);
-  if(keyword == 'q') goForward(speedA, speedB-SPEED_FIX2); 
-  if(keyword == 'e') goForward(speedA-SPEED_FIX2, speedB); 
-  if(keyword == 'z') goBackward(speedA,speedB-SPEED_FIX2); 
-  if(keyword == 'x') goBackward(speedA-SPEED_FIX2,speedB); 
-  if(keyword == ' ') stop();
-}
 }
 
 void BOXZ::motorCom(int speedA, int speedB)

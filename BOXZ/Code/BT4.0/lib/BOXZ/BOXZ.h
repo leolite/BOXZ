@@ -13,6 +13,15 @@ BOXZ.h - Library for general robot control.
  */
 
 /*  Modified record:
+ Update: 20170630
+  1. Update stop()
+  2. Tested for OCROBOT, add standard control and PWM control
+  
+  
+ Update: 20170629
+  1. rebuild action for qezx, delete _driveParaBB
+  2. Big Update! BOXZ V3 will not use JSON and back to BASE protocol (Easy to program)
+  
  Update: 20161121
   1. para support L9110 and DRV8833
   2. add baby mode
@@ -83,7 +92,7 @@ BOXZ.h - Library for general robot control.
 //if DEBUG = 1 show info; DEBUG = 2 show RAW
 #define DEBUG			0
 #define PREACCELERATION	1  //not ready yet
-#define DEFAULT_SPEED	200 //MAX 255
+#define DEFAULT_SPEED	255 //MAX 255
 #define SPEED_FIX1 0x50  //fixed speed for turn left and right
 #define SPEED_FIX2 0x70  //fixed speed for q,e,z,x
 
@@ -144,8 +153,9 @@ class BOXZ
 {
 public:
   //motor control
-  boolean initMotor();  //Default 4 Pin drive for L293 - 20161115
-  boolean initMotorType(int type); //20161115, this function is used for DRV8833(2), also L9110(1)
+  void initMotor();  //Default 4 Pin drive for L293 - 20161115
+  void initMotor(int ver);  //Leo 20170629
+  void initMotorType(int type); //20161115, this function is used for DRV8833(2), also L9110(1)
   void initMotor(int inx, int pwmx); //L9110 or other one chanel drive
   void initMotor(int inx, int pwmx, int inCHx); //L9110 or other one chanel drive
   void initMotor(int inA, int inB, int pwmA, int pwmB);
@@ -217,7 +227,7 @@ private:
   //20161118 add by Leo
   boolean _driveParaSD; //0 = Default; 1 = DRV8833 SlowDecay(reverse speed)
   boolean _driveParaNB; //0 = Default; 1 = L9110 Not both output are HIGH
-  boolean _driveParaBB; //0 = Default; 1 = Baby with 4 direction
+  //boolean _driveParaBB; //0 = Default; 1 = Easy with 4 direction
 
   //servo
   int _servoPosMax;
